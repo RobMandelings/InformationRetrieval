@@ -11,14 +11,15 @@
   "dependencies": {
     "axios": "^1.2.0",
     "path": "^0.12.7",
-    "require": "^2.4.20",
-    "tailwindcss": "^3.2.4",
+    "postcss": "^7.0.39",
+    "require": "^0.4.4",
     "vue": "^3.2.41",
-    "vue-router": "^4.1.6",
-    "vuetify": "^3.0.3"
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.2.0",
+    "autoprefixer": "^10.4.13",
+    "tailwindcss": "^3.2.4",
     "vite": "^3.2.3",
     "vue-tsc": "^1.0.9"
   }

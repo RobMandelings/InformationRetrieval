@@ -9,6 +9,8 @@ pylucene-7.7.1-src
 .LSOverride
 *.pdf
 
+game_data/*
+
 # Icon must end with two \r
 Icon
 

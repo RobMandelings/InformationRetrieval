@@ -1,0 +1,38 @@
+<template>
+  <div>
+    <div class="grid grid-cols-8 grid-rows-8 gap-0">
+      <template v-for="(i, row) in 8" :key="row">
+        <div class="text-xl" v-for="(j, col) in 8" :key="col">
+          <div :class="getBackgroundForPosition(row, col)" style="width: 60px; aspect-ratio: 1/1">
+            <div v-if="state[`${row},${col}`]">
+              <img class="h-full"
+                   :src="state[`${row},${col}`].imgPath"/>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  name: 'ChessBoard',
+  data() {
+
+  },
+  props: ['state'],
+  computed: {},
+  methods: {
+    getBackgroundForPosition(row, column) {
+      let black = row % 2 !== 0;
+      if ((row * 8 + column) % 2 !== 0) black = !black;
+
+      if (black) return 'bg-amber-50';
+      else return 'bg-amber-800';
+
+    }
+  }
+}
+
+</script>

@@ -4,9 +4,9 @@
       <template v-for="(i, row) in 8" :key="row">
         <div class="text-xl" v-for="(j, col) in 8" :key="col">
           <div :class="getBackgroundForPosition(row, col)" style="width: 60px; aspect-ratio: 1/1">
-            <div v-if="state[`${row},${col}`]">
+            <div v-if="getPiece(row,col)">
               <img class="h-full"
-                   :src="state[`${row},${col}`].imgPath"/>
+                   :src="getPiece(row,col).imgPath" :alt="getPiece(row,col).name"/>
             </div>
           </div>
         </div>
@@ -24,6 +24,9 @@ export default {
   props: ['state'],
   computed: {},
   methods: {
+    getPiece(row, col) {
+      return this.state[`${row},${col}`];
+    },
     getBackgroundForPosition(row, column) {
       let black = row % 2 !== 0;
       if ((row * 8 + column) % 2 !== 0) black = !black;

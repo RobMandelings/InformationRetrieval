@@ -22,7 +22,7 @@ def ping_pong():
     return jsonify('pongewong!')
 
 
-api.add_resource(chess_api.SearchResource, '/api/search/<string:state_encoding>')
+api.add_resource(chess_api.SearchResource, '/api/search')
 
 if __name__ == '__main__':
     app.run()

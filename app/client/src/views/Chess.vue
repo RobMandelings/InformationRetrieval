@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {initialState} from "@/assets/js/StateLoader.js";
+import {initialState, encodeState} from "@/assets/js/StateLoader.js";
 import ChessBoard from "@/components/ChessBoard.vue";
 import axios from 'axios';
 
@@ -35,18 +35,19 @@ export default {
   },
   computed: {},
   methods: {
+
     async submitSearch() {
       this.searching = true;
-      const stateEncoding = 'hi';
+      const stateEncoding = encodeState(this.state);
       try {
         const result = await axios(
             {
               method: 'get',
-              url: `http://127.0.0.1:5000/api/search/${stateEncoding}`,
+              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}`,
               timeout: 2000
             });
 
-        console.log(`result is: ${result.data.msg}`)
+        console.log(`result is: ${result.data.msg}`);
       } catch (e) {
         console.log(e);
       }

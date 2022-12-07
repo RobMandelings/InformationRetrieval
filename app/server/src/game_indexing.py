@@ -61,8 +61,8 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip:int = 12):
         board = g.board()
         for move in g.mainline_moves():
             board.push(move)
-            brdenc = encode_board(board)
-            documents.append(brdenc)
+            board_encoding = encode_board(board)
+            documents.append(board_encoding)
 
     return documents
 
@@ -79,8 +79,11 @@ def retrieve(board: chess.Board):
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
     """
-    board_encoding = ""
-    pass
+    board_encoding = encode_board(board)
+    # add additional info to encoding with closures
+    # retrieve from index (return for test)
+    return board_encoding
+
 
 # TODO test max 1 state retrieved per game
 

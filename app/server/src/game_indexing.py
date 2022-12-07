@@ -1,6 +1,19 @@
+import enum
 import typing
 
 import chess.pgn
+
+
+class Closure(enum.Enum):
+    Reachability = '|'
+    Attack = '>'
+    Defense = '<'
+    RayAttack = '='
+
+
+def encode_closure(closure: typing.Dict[str, float], closure_type: Closure):
+    closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
+    return " ".join(closure_encodings)
 
 
 def reachability_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
@@ -44,6 +57,7 @@ def retrieve(board: chess.Board):
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
     """
+
     pass
 
 # TODO test max 1 state retrieved per game

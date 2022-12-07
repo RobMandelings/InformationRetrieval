@@ -37,3 +37,27 @@ export const initialState = {
     '7,6': new piece.Knight(false),
     '7,7': new piece.Rook(false),
 }
+
+/**
+ * Encodes the chess state into FEN encoding
+ */
+export function encodeState(state) {
+    let encoding = '';
+
+    for (let row = 0; row < 8; row++) {
+        let rowEncoding = '';
+        let emptyCtr = 0;
+        for (let col = 0; col < 8; col++) {
+            const piece = state[`${row},${col}`]
+            if (piece) {
+                if (emptyCtr > 0) rowEncoding += `${emptyCtr}`;
+                rowEncoding += piece.shortName;
+                emptyCtr = 0;
+            } else emptyCtr++;
+        }
+
+        if (emptyCtr > 0) rowEncoding += `${emptyCtr}`;
+        encoding += `${rowEncoding}/`
+    }
+    return encoding;
+}

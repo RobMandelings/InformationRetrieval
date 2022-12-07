@@ -15,6 +15,7 @@ def alpha_closure():
 def index_games(games: list):
     """
     Base algorithm of the paper
+    games: list of pgn-parser object
     """
     pass
 

@@ -2,6 +2,7 @@ import enum
 import typing
 
 import chess.pgn
+import pysolr
 
 
 class Closure(enum.Enum):
@@ -85,7 +86,25 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
             board.push(move)
             if i + 1 > num_skip:
                 board_encoding = encode_board(board, False, False, False, False)
-                documents.append(board_encoding)
+
+                solr = pysolr.Solr('http://localhost:8983/solr/chessGames', always_commit=True, timeout=10)
+                solr.ping()
+
+                solr.add([
+                    {
+                        "id": "doc_1",
+                        "title": "A test document",
+                    },
+                    {
+                        "id": "doc_2",
+                        "title": "The Banana: Tasty or Dangerous?",
+                        "_doc": [
+                            {"id": "child_doc_1", "title": "peel"},
+                            {"id": "child_doc_2", "title": "seed"},
+                        ]
+                    },
+                ])
+                # https://pypi.org/project/pysolr/#description
 
     return documents
 

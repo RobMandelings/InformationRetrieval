@@ -16,6 +16,7 @@ def attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
     pass
 
+
 def defense_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
     Compute the attack closure of a piece on the given board
@@ -30,7 +31,7 @@ def ray_attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     pass
 
 
-def index_games(games: typing.List[chess.pgn.Game]):
+def index_games(games: typing.List[chess.pgn.Game], num_skip=12):
     """
     Base algorithm of the paper
     games: list of games

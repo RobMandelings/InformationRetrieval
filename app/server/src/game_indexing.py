@@ -88,29 +88,35 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
     documents = []  # TODO instead of return list add to documents index
     for g in games:
         board = g.board()
-        for (i, move) in enumerate(g.mainline_moves()):
-            board.push(move)
-            if i + 1 > num_skip:
+        for (move_nr, move) in enumerate(g.mainline_moves()):
+            if move_nr > num_skip:
                 board_encoding = encode_board(board, False, False, False, False)
 
                 solr = pysolr.Solr('http://localhost:8983/solr/chessGames', always_commit=True, timeout=10)
                 solr.ping()
 
+                result = solr.search(
+                    'board:(Ra1 Ke1 Rh1 Pa2 Pb2 Pf2 Pg2 Ph2 Pc3 Pd3 Qf3 qe5 pc6 Ne6 bg6 pa7 pb7 be7 pg7 ph7 ra8 ke8 rh8)',
+                    **{
+                        "fl": "id,game_id,score,board",
+                        "group": "true",
+                        "group.field": "game_id"
+                    })
+                response = result.raw_response['grouped']['game_id']['']
+                doc_id = response['numFound']
+
                 solr.add([
                     {
-                        "id": "doc_1",
-                        "title": "A test document",
-                    },
-                    {
-                        "id": "doc_2",
-                        "title": "The Banana: Tasty or Dangerous?",
-                        "_doc": [
-                            {"id": "child_doc_1", "title": "peel"},
-                            {"id": "child_doc_2", "title": "seed"},
-                        ]
+                        "id": doc_id,
+                        "game_id": 0,
+                        "move_nr": move_nr,
+                        "board": board_encoding,
                     },
                 ])
-                # https://pypi.org/project/pysolr/#description
+                # TODO add "game" field for retrieval of document
+
+            board.push(move)
+            # https://pypi.org/project/pysolr/#description
 
     return documents
 

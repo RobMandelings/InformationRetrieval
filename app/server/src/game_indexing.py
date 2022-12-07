@@ -63,3 +63,4 @@ def retrieve(board: chess.Board):
 # TODO test max 1 state retrieved per game
 
 # TODO: Board matrix as dictionary
+

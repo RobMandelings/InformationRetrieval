@@ -73,7 +73,7 @@ def encode_board(board: chess.Board,
     return f"{base_board_encoding}\n{closure_encodings}"
 
 
-def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 12):
+def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
     """
     Base algorithm of the paper
     games: list of games
@@ -84,16 +84,17 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 12):
         for (i, move) in enumerate(g.mainline_moves()):
             board.push(move)
             if i + 1 > num_skip:
-                board_encoding = encode_board(board)
+                board_encoding = encode_board(board, False, False, False, False)
                 documents.append(board_encoding)
 
     return documents
 
-    # Test for index_games
-    pgn = open("example_games/game.pgn")
-    game = chess.pgn.read_game(pgn)
-    games = [game]
-    index_games(games)
+
+# Test for index_games
+pgn = open("example_games/game.pgn")
+game = chess.pgn.read_game(pgn)
+games = [game]
+index_games(games)
 
 
 def retrieve(board: chess.Board):

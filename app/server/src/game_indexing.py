@@ -31,13 +31,22 @@ def ray_attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     pass
 
 
-def index_games(games: typing.List[chess.pgn.Game], num_skip=12):
+pgn = open("example_games/game.pgn")
+game = chess.pgn.read_game(pgn)
+games = [game]
+
+
+def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 12):
     """
     Base algorithm of the paper
     games: list of games
     """
-    pass
-
+    for g in games:
+        # numskip
+        board = g.board()
+        brdenc = None
+        for move in g.mainline_moves():
+            board.push(move)
 
 def retrieve(board: chess.Board):
     """
@@ -50,3 +59,7 @@ def retrieve(board: chess.Board):
 
 # TODO: Board matrix as dictionary
 
+# TODO: document the board encoding from paper
+
+
+index_games(games)

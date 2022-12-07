@@ -1,3 +1,6 @@
+import chess.pgn
+
+
 def reachability_closure():
     """
     r-closure in the paper
@@ -12,10 +15,15 @@ def alpha_closure():
     pass
 
 
+pgn = open("example_games/game.pgn")
+game = chess.pgn.read_game(pgn)
+print(game)
+
+
 def index_games(games: list):
     """
     Base algorithm of the paper
-    games: list of pgn-parser object
+    games: list of chess board objects (chess library)
     """
     pass
 

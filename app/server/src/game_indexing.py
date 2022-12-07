@@ -16,6 +16,7 @@ def attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
     pass
 
+
 def defense_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
     Compute the attack closure of a piece on the given board
@@ -48,3 +49,4 @@ def retrieve(board: chess.Board):
 # TODO test max 1 state retrieved per game
 
 # TODO: Board matrix as dictionary
+

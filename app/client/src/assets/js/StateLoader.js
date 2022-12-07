@@ -57,7 +57,8 @@ export function encodeState(state) {
         }
 
         if (emptyCtr > 0) rowEncoding += `${emptyCtr}`;
-        encoding += `${rowEncoding}/`
+        encoding += `${rowEncoding}`;
+        if (row < 7) encoding += '/';
     }
     return encoding;
 }

@@ -1,36 +1,47 @@
+import typing
+
 import chess.pgn
 
 
-def reachability_closure():
+def reachability_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
-    r-closure in the paper
-    """
-    pass
-
-
-def alpha_closure():
-    """
-    Not sure whether to compute the closures attack, defense and x-ray one by one or at once
+    Computes the reachability closure of a piece on the given board
     """
     pass
 
 
-pgn = open("example_games/game.pgn")
-game = chess.pgn.read_game(pgn)
-print(game)
+def attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
+    """
+    Compute the attack closure of a piece on the given board
+    """
+    pass
+
+def defense_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
+    """
+    Compute the attack closure of a piece on the given board
+    """
+    pass
 
 
-def index_games(games: list):
+def ray_attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
+    """
+    Compute the attack closure of a piece on the given board
+    """
+    pass
+
+
+def index_games(games: typing.List[chess.pgn.Game]):
     """
     Base algorithm of the paper
-    games: list of chess board objects (chess library)
+    games: list of games
     """
     pass
 
 
-def retrieve(board_matrix):
+def retrieve(board: chess.Board):
     """
     Retrieves a ranked list of game states provided the query
+    TODO retrieve complete games as documents instead of boards
     """
     pass
 

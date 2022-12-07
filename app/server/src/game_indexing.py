@@ -3,30 +3,30 @@ import typing
 import chess
 
 
-def reachability_closure(board: chess.Board) -> typing.Dict[str, float]:
+def reachability_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
-    Computes the reachability closure of a piece on the board
-    """
-    pass
-
-
-def attack_closure(board: chess.Board) -> typing.Dict[str, float]:
-    """
-    Compute the attack closure of the pieces on a board
+    Computes the reachability closure of a piece on the given board
     """
     pass
 
 
-def defense_closure(board: chess.Board) -> typing.Dict[str, float]:
+def attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
-    Compute the attack closure of the pieces on a board
+    Compute the attack closure of a piece on the given board
     """
     pass
 
 
-def ray_attack_closure(board: chess.Board) -> typing.Dict[str, float]:
+def defense_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     """
-    Compute the attack closure of the pieces on a board
+    Compute the attack closure of a piece on the given board
+    """
+    pass
+
+
+def ray_attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
+    """
+    Compute the attack closure of a piece on the given board
     """
     pass
 
@@ -39,7 +39,7 @@ def index_games(games: list):
     pass
 
 
-def retrieve(board_matrix):
+def retrieve(board: chess.Board):
     """
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards

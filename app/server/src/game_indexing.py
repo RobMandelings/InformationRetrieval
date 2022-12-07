@@ -17,7 +17,7 @@ def encode_closure(closure: typing.Dict[str, float], closure_type: Closure):
     return " ".join(closure_encodings)
 
 
-def reachability_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
+def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, float]:
     """
     Computes the reachability closure of a piece on the given board
     """
@@ -58,7 +58,7 @@ def encode_board(board: chess.Board,
             base_board_list.append(f"{piece.symbol()}{chess.SQUARE_NAMES[square]}")
 
             if use_reachability:
-                r_closure_enc = reachability_closure(board, piece)
+                r_closure_enc = reachability_closure(board, square)
                 closure_encodings += f"{r_closure_enc}\n"
             if use_attack:
                 a_closure_enc = attack_closure(board, piece)
@@ -79,13 +79,12 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
     Base algorithm of the paper
     games: list of games
     """
-    documents = []  # TODO instead of return list add to documents index
     for g in games:
         board = g.board()
         for (i, move) in enumerate(g.mainline_moves()):
             board.push(move)
             if i + 1 > num_skip:
-                board_encoding = encode_board(board, False, False, False, False)
+                board_encoding = encode_board(board, True, False, False, False)
 
                 solr = pysolr.Solr('http://localhost:8983/solr/chessGames', always_commit=True, timeout=10)
                 solr.ping()
@@ -105,8 +104,6 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
                     },
                 ])
                 # https://pypi.org/project/pysolr/#description
-
-    return documents
 
 
 # Test for index_games

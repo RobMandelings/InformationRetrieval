@@ -1,13 +1,32 @@
-def reachability_closure():
+import typing
+
+import chess
+
+
+def reachability_closure(board: chess.Board) -> typing.Dict[str, float]:
     """
-    r-closure in the paper
+    Computes the reachability closure of a piece on the board
     """
     pass
 
 
-def alpha_closure():
+def attack_closure(board: chess.Board) -> typing.Dict[str, float]:
     """
-    Not sure whether to compute the closures attack, defense and x-ray one by one or at once
+    Compute the attack closure of the pieces on a board
+    """
+    pass
+
+
+def defense_closure(board: chess.Board) -> typing.Dict[str, float]:
+    """
+    Compute the attack closure of the pieces on a board
+    """
+    pass
+
+
+def ray_attack_closure(board: chess.Board) -> typing.Dict[str, float]:
+    """
+    Compute the attack closure of the pieces on a board
     """
     pass
 
@@ -23,6 +42,7 @@ def index_games(games: list):
 def retrieve(board_matrix):
     """
     Retrieves a ranked list of game states provided the query
+    TODO retrieve complete games as documents instead of boards
     """
     pass
 

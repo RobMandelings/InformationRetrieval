@@ -26,3 +26,5 @@ def retrieve(board_matrix):
     pass
 
 # TODO test max 1 state retrieved per game
+
+# TODO: Board matrix as dictionary

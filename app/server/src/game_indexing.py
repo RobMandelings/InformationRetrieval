@@ -44,12 +44,34 @@ def ray_attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     pass
 
 
-def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 12):
+def encode_board(board: chess.Board) -> str:
+    for row in reversed(range(1, 9)):
+        for col in range(ord('A'), ord('H')):
+            pass
+
+
+def index_games(games: typing.List[chess.pgn.Game], num_skip:int = 12):
     """
     Base algorithm of the paper
     games: list of games
     """
-    pass
+    documents = [] # TODO instead of return list add to documents index
+    for g in games:
+        # numskip
+        board = g.board()
+        for move in g.mainline_moves():
+            board.push(move)
+            brdenc = encode_board(board)
+            documents.append(brdenc)
+
+    return documents
+
+
+# Test for index_games
+pgn = open("example_games/game.pgn")
+game = chess.pgn.read_game(pgn)
+games = [game]
+index_games(games)
 
 
 def retrieve(board: chess.Board):
@@ -57,7 +79,7 @@ def retrieve(board: chess.Board):
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
     """
-
+    board_encoding = ""
     pass
 
 # TODO test max 1 state retrieved per game

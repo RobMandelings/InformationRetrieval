@@ -50,19 +50,19 @@ def encode_board(board: chess.Board) -> str:
             pass
 
 
-def index_games(games: typing.List[chess.pgn.Game], num_skip:int = 12):
+def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 12):
     """
     Base algorithm of the paper
     games: list of games
     """
-    documents = [] # TODO instead of return list add to documents index
+    documents = []  # TODO instead of return list add to documents index
     for g in games:
-        # numskip
         board = g.board()
-        for move in g.mainline_moves():
+        for (i, move) in enumerate(g.mainline_moves()):
             board.push(move)
-            board_encoding = encode_board(board)
-            documents.append(board_encoding)
+            if i + 1 > num_skip:
+                board_encoding = encode_board(board)
+                documents.append(board_encoding)
 
     return documents
 

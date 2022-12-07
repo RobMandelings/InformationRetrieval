@@ -45,6 +45,12 @@ def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[st
     pass
 
 
+def encode_piece_at(piece, square):
+    assert piece
+    assert 0 <= square <= chess.SQUARES[-1]
+    return f"{piece.symbol()}{chess.SQUARE_NAMES[square]}"
+
+
 def encode_board(board: chess.Board,
                  use_reachability: bool = True,
                  use_attack: bool = True,
@@ -55,7 +61,7 @@ def encode_board(board: chess.Board,
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
-            base_board_list.append(f"{piece.symbol()}{chess.SQUARE_NAMES[square]}")
+            base_board_list.append(encode_piece_at(piece, square))
 
             if use_reachability:
                 r_closure_enc = reachability_closure(board, square)

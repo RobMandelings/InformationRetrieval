@@ -1,6 +1,6 @@
 import typing
 
-import chess
+import chess.pgn
 
 
 def reachability_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
@@ -31,10 +31,10 @@ def ray_attack_closure(board: chess.Board, piece) -> typing.Dict[str, float]:
     pass
 
 
-def index_games(games: list):
+def index_games(games: typing.List[chess.pgn.Game]):
     """
     Base algorithm of the paper
-    games: list of pgn-parser object
+    games: list of games
     """
     pass
 

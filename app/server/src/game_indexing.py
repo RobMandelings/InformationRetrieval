@@ -17,11 +17,27 @@ def encode_closure(closure: typing.Dict[str, float], closure_type: Closure):
     return " ".join(closure_encodings)
 
 
-def reachability_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
+# chess.square_distance() is chebychev distance
+def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, float]:
     """
     Computes the reachability closure of a piece on the given board
     """
-    pass
+    piece = board.piece_at(square)
+    square_name = chess.square_name(square)
+    legal_moves_list = list(board.legal_moves)
+    possible_moves = [move for move in legal_moves_list if move.uci()[:2] == square_name]
+    closure = {}
+    for move in possible_moves:
+        d = chess.square_distance(square, chess.parse_square(move.uci()[2:]))
+        weight = 1 - ((7 * d) / 64)
+        closure[move.uci()] = weight
+
+    return closure
+
+
+pgn = open("example_games/game.pgn")
+game = chess.pgn.read_game(pgn)
+board = game.board()
 
 
 def attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
@@ -48,7 +64,7 @@ def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[st
 def encode_piece_at(piece, square):
     assert piece
     assert 0 <= square <= chess.SQUARES[-1]
-    return f"{piece.symbol()}{chess.SQUARE_NAMES[square]}"
+    return f"{piece.symbol()}{chess.square_name(square)}"
 
 
 def encode_board(board: chess.Board,
@@ -64,7 +80,7 @@ def encode_board(board: chess.Board,
             base_board_list.append(encode_piece_at(piece, square))
 
             if use_reachability:
-                r_closure_enc = reachability_closure(board, piece)
+                r_closure_enc = reachability_closure(board, square)
                 closure_encodings += f"{r_closure_enc}\n"
             if use_attack:
                 a_closure_enc = attack_closure(board, piece)
@@ -85,7 +101,6 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
     Base algorithm of the paper
     games: list of games
     """
-    documents = []  # TODO instead of return list add to documents index
     for g in games:
         board = g.board()
         for (move_nr, move) in enumerate(g.mainline_moves()):
@@ -118,14 +133,12 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
             board.push(move)
             # https://pypi.org/project/pysolr/#description
 
-    return documents
-
 
 # Test for index_games
-pgn = open("example_games/game.pgn")
-game = chess.pgn.read_game(pgn)
-games = [game]
-index_games(games)
+# pgn = open("example_games/game.pgn")
+# game = chess.pgn.read_game(pgn)
+# games = [game]
+# index_games(games)
 
 
 def retrieve(board: chess.Board):

@@ -13,9 +13,16 @@ class Closure(enum.Enum):
     RayAttack = '='
 
 
-def encode_closure(closure: typing.Dict[str, float], closure_type: Closure):
-    closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
-    return " ".join(closure_encodings)
+def encode_closure(closure, closure_type: Closure):
+    if closure_type is Closure.Reachability:
+        # typing.Dict[str, float]
+        closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
+        return " ".join(closure_encodings)
+    elif closure_type in {Closure.Attack, Closure.Defense}:
+        closure_encodings = []
+        for (item_nr, item) in enumerate(closure[1]):
+            closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")
+        return " ".join(closure_encodings)
 
 
 # chess.square_distance() is chebychev distance
@@ -31,12 +38,13 @@ def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, fl
     for move in possible_moves:
         d = chess.square_distance(square, chess.parse_square(move.uci()[2:]))
         weight = 1 - ((7 * d) / 64)
-        closure[move.uci()] = weight
+        key = board.piece_at(chess.parse_square(move.uci()[:2])).symbol() + move.uci()[2:]
+        closure[key] = weight
 
     return closure
 
 
-def attack_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing.List[int]]:
+def attack_closure(board: chess.Board, square: int) -> typing.Tuple[str, typing.List[str]]:
     """
     Compute the attack closure of a piece on the given board
     """
@@ -45,13 +53,13 @@ def attack_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing.
     color = board.color_at(square)
     for attacked_square in attacked_squares:
         if board.piece_at(attacked_square) is not None and color is not board.color_at(attacked_square):
-            attacked_pieces.append(attacked_square)
-    closure = (square, attacked_pieces)
+            attacked_pieces.append(board.piece_at(attacked_square).symbol() + chess.square_name(attacked_square))
+    closure = (board.piece_at(square).symbol(), attacked_pieces)
 
     return closure
 
 
-def defense_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing.List[int]]:
+def defense_closure(board: chess.Board, square: int) -> typing.Tuple[str, typing.List[str]]:
     """
     Compute the defense closure of a piece on the given board
     """
@@ -60,8 +68,8 @@ def defense_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing
     color = board.color_at(square)
     for attacked_square in attacked_squares:
         if board.piece_at(attacked_square) is not None and color is board.color_at(attacked_square):
-            attacked_pieces.append(attacked_square)
-    closure = (square, attacked_pieces)
+            attacked_pieces.append(board.piece_at(attacked_square).symbol() + chess.square_name(attacked_square))
+    closure = (board.piece_at(square).symbol(), attacked_pieces)
 
     return closure
 
@@ -69,10 +77,12 @@ def defense_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing
 pgn = open("example_games/game2.pgn")
 game = chess.pgn.read_game(pgn)
 board = game.board()
-for (move_nr, move) in enumerate(game.mainline_moves()):
-    if move_nr < 15:
-        board.push(move)
-test = defense_closure(board, 19)
+for move in game.mainline_moves():
+    board.push(move)
+test = defense_closure(board, 3)
+encoded_closure = encode_closure(test, Closure.Defense)
+print(encoded_closure)
+
 
 
 def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
@@ -107,7 +117,7 @@ def encode_board(board: chess.Board,
                 a_closure_enc = attack_closure(board, square)
                 closure_encodings += f"{a_closure_enc}\n"
             if use_defense:
-                d_closure_enc = defense_closure(board, piece)
+                d_closure_enc = defense_closure(board, square)
                 closure_encodings += f"{d_closure_enc}\n"
             if use_ray_attack:
                 x_closure_enc = ray_attack_closure(board, piece)
@@ -151,13 +161,11 @@ def index_games(games_pgn_str: typing.List[str], num_skip: int = 24):
 
     solr.commit()
 
-
 # Test for index_games
 game_str = open("example_games/game.pgn").read()
 game2_str = open("example_games/game2.pgn").read()
 games = [game_str, game2_str]
 index_games(games, num_skip=0)
-
 
 def retrieve(board: chess.Board):
     """
@@ -182,7 +190,5 @@ def retrieve(board: chess.Board):
     return documents
 
 # TODO test max 1 state retrieved per game
-
-# TODO: Board matrix as dictionary
 
 # TODO: document the board encoding from paper

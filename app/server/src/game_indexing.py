@@ -39,6 +39,7 @@ pgn = open("example_games/game.pgn")
 game = chess.pgn.read_game(pgn)
 board = game.board()
 
+
 def attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
     """
     Compute the attack closure of a piece on the given board

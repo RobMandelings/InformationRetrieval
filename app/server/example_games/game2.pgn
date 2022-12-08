@@ -1,0 +1,17 @@
+[Event "Rated Bullet game"]
+[Site "https://lichess.org/rklpc7mk"]
+[White "Naitero_Nagasaki"]
+[Black "800"]
+[Result "0-1"]
+[UTCDate "2012.12.31"]
+[UTCTime "23:04:57"]
+[WhiteElo "1824"]
+[BlackElo "1973"]
+[WhiteRatingDiff "-6"]
+[BlackRatingDiff "+8"]
+[ECO "B12"]
+[Opening "Caro-Kann Defense: Goldman Variation"]
+[TimeControl "60+1"]
+[Termination "Normal"]
+
+1. a3 d5 2. a4 d4 3. a5 d3

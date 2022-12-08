@@ -35,16 +35,17 @@ def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, fl
     return closure
 
 
-pgn = open("example_games/game.pgn")
-game = chess.pgn.read_game(pgn)
-board = game.board()
-
-
-def attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
+def attack_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing.List[int]]:
     """
     Compute the attack closure of a piece on the given board
     """
-    pass
+    attacked_squares = board.attacks(square)
+    attacked_pieces = []
+    for attacked_square in attacked_squares:
+        if board.piece_at(attacked_square) is not None:
+            attacked_pieces.append(attacked_square)
+    closure = (square, attacked_pieces)
+    return closure
 
 
 def defense_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
@@ -83,7 +84,7 @@ def encode_board(board: chess.Board,
                 r_closure_enc = reachability_closure(board, square)
                 closure_encodings += f"{r_closure_enc}\n"
             if use_attack:
-                a_closure_enc = attack_closure(board, piece)
+                a_closure_enc = attack_closure(board, square)
                 closure_encodings += f"{a_closure_enc}\n"
             if use_defense:
                 d_closure_enc = defense_closure(board, piece)

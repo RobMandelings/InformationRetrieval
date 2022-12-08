@@ -74,15 +74,14 @@ def defense_closure(board: chess.Board, square: int) -> typing.Tuple[str, typing
     return closure
 
 
-pgn = open("example_games/game2.pgn")
-game = chess.pgn.read_game(pgn)
-board = game.board()
-for move in game.mainline_moves():
-    board.push(move)
-test = defense_closure(board, 3)
-encoded_closure = encode_closure(test, Closure.Defense)
-print(encoded_closure)
-
+# pgn = open("example_games/game2.pgn")
+# game = chess.pgn.read_game(pgn)
+# board = game.board()
+# for move in game.mainline_moves():
+#     board.push(move)
+# test = defense_closure(board, 3)
+# encoded_closure = encode_closure(test, Closure.Defense)
+# print(encoded_closure)
 
 
 def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
@@ -161,11 +160,15 @@ def index_games(games_pgn_str: typing.List[str], num_skip: int = 24):
 
     solr.commit()
 
+
 # Test for index_games
 game_str = open("example_games/game.pgn").read()
 game2_str = open("example_games/game2.pgn").read()
-games = [game_str, game2_str]
+game3_str = open("example_games/game3.pgn").read()
+game4_str = open("example_games/game4.pgn").read()
+games = [game_str, game2_str, game3_str, game4_str]
 index_games(games, num_skip=0)
+
 
 def retrieve(board: chess.Board):
     """
@@ -175,7 +178,8 @@ def retrieve(board: chess.Board):
     board_encoding = encode_board(board, False, False, False, False)
     solr = get_solr_instance()
     result = solr.search(
-        'board:(Ra1 Nb1 Bc1 Qd1 Ke1 Bf1 Ng1 Rh1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 pa7 pb7 pc7 pd7 pe7 pf7 pg7 ph7 ra8 nb8 bc8 qd8 ke8 bf8 ng8 rh8)',
+        # 'board:(Ra1 Nb1 Bc1 Qd1 Ke1 Bf1 Ng1 Rh1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 pa7 pb7 pc7 pd7 pe7 pf7 pg7 ph7 ra8 nb8 bc8 qd8 ke8 bf8 ng8 rh8)',
+        'board:(Ra1 Bc1 Ke1 Bf1 Ng1 Rh1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Qf3 Ne4 pc6 pa7 pb7 nd7 pe7 pf7 pg7 ph7 ra8 bc8 qd8 ke8 bf8 ng8 rh8)',
         **{
             "fl": "id,game,score,move_nr",
             "group": "true",

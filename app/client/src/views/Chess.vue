@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row space-x-3">
     <div class="flex flex-col space-y-2">
-      <chess-board :state="state"></chess-board>
+      <chess-board style="width: 500px" :state="state"></chess-board>
       <div class="flex flex-row justify-between">
         <button class="p-1 text-white bg-gray-500 hover:bg-gray-200 transition">Load FEN...</button>
         <button @click.prevent.stop="submitSearch"
@@ -14,9 +14,12 @@
     </div>
     <div class="flex flex-col" style="min-width: 500px">
       <h1 class="text-2xl">Search results</h1>
-      <div class="border-2 h-full w-full">
+      <div class="border-2 h-full w-full space-y-2">
         <template v-for="document in retrievedDocuments">
-          <chess-board :state="getState(document.game)"></chess-board>
+          <div class="flex flex-col">
+            <h3 class="text-lg">{{ document.game._header['Event'] }}, id: {{ document.id }}</h3>
+            <chess-board style="width: 300px" :state="document.boardStates[document.move_nr - 1]"></chess-board>
+          </div>
         </template>
       </div>
     </div>
@@ -59,11 +62,17 @@ export default {
         documents.forEach(document => {
           const game = new Chess();
           game.loadPgn(document['game']);
-          game.reset()
-          // for (let i = 0; i < document.move_nr; i++) {
-          //   game.move(game.moves()[document.move_nr])
-          // }
-          document['game'] = game
+          const history = game.history()
+          const newGame = new Chess()
+
+          let boardStates = []
+
+          for (let i = 0; i < document.move_nr; i++) {
+            newGame.move(history[i])
+            boardStates.push(decodeState(newGame.fen()))
+          }
+          document['game'] = game;
+          document['boardStates'] = boardStates;
         });
         this.retrievedDocuments = documents;
       } catch (e) {

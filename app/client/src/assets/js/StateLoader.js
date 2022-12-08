@@ -58,6 +58,8 @@ export function loadPiece(encodedPiece) {
     if (encodedPiece === 'p') return new piece.Pawn(true)
     if (encodedPiece === 'P') return new piece.Pawn(false)
 
+    console.assert(false, `should not be possible, encodedPiece: ${encodedPiece}`)
+
 }
 
 /**
@@ -93,13 +95,14 @@ export function decodeState(fen) {
 
     for (let i = 0; i < 8; i++) {
         const row = rows[i];
+        let col = 0;
         for (let j = 0; j < 8; j++) {
-
             const elem = row[j];
             if (isNaN(elem)) {
-                state[`${i},${j}`] = loadPiece(row[j]);
+                state[`${i},${col}`] = loadPiece(row[j]);
+                col++;
             } else {
-                j += (parseInt(elem) - 1)
+                col += parseInt(elem)
             }
         }
     }

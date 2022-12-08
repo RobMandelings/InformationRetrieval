@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <div class="grid grid-cols-8 grid-rows-8 gap-0">
+  <div class="w-full">
+    <div class="grid grid-cols-8 grid-rows-8 gap-0 w-full">
       <template v-for="(i, row) in 8" :key="row">
         <div class="text-xl" v-for="(j, col) in 8" :key="col">
-          <div :class="getBackgroundForPosition(row, col)" style="width: 60px; aspect-ratio: 1/1">
+          <div :class="getBackgroundForPosition(row, col)" style="aspect-ratio: 1/1">
             <div v-if="getPiece(row,col)">
               <img class="h-full"
                    :src="getPiece(row,col).imgPath" :alt="getPiece(row,col).name"/>

@@ -15,13 +15,17 @@
     <div class="flex flex-col" style="min-width: 500px">
       <h1 class="text-2xl">Search results</h1>
       <div class="border-2 h-full w-full">
+        <template v-for="document in retrievedDocuments">
+          <chess-board :state="getState(document.game)"></chess-board>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {initialState, encodeState} from "@/assets/js/StateLoader.js";
+import {initialState, encodeState, decodeState} from "@/assets/js/StateLoader.js";
+import {Chess} from 'chess.js';
 import ChessBoard from "@/components/ChessBoard.vue";
 import axios from 'axios';
 
@@ -30,11 +34,16 @@ export default {
   data() {
     return {
       state: initialState,
-      searching: false
+      searching: false,
+      retrievedDocuments: []
     }
   },
   computed: {},
   methods: {
+
+    getState(chess) {
+      return decodeState(chess.fen());
+    },
 
     async submitSearch() {
       this.searching = true;
@@ -43,11 +52,20 @@ export default {
         const result = await axios(
             {
               method: 'get',
-              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}`,
-              timeout: 2000
+              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}`
             });
 
-        console.log(`result is: ${result.data.msg}`);
+        const documents = result.data.results;
+        documents.forEach(document => {
+          const game = new Chess();
+          game.loadPgn(document['game']);
+          game.reset()
+          // for (let i = 0; i < document.move_nr; i++) {
+          //   game.move(game.moves()[document.move_nr])
+          // }
+          document['game'] = game
+        });
+        this.retrievedDocuments = documents;
       } catch (e) {
         console.log(e);
       }

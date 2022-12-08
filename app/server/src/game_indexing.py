@@ -1,4 +1,5 @@
 import enum
+import io
 import typing
 
 import chess.pgn
@@ -73,6 +74,7 @@ for (move_nr, move) in enumerate(game.mainline_moves()):
         board.push(move)
 test = defense_closure(board, 19)
 
+
 def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
     """
     Compute the attack closure of a piece on the given board
@@ -115,34 +117,29 @@ def encode_board(board: chess.Board,
     return f"{base_board_encoding}\n{closure_encodings}"
 
 
-def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
+def get_solr_instance() -> pysolr.Solr:
+    return pysolr.Solr('http://localhost:8983/solr/chessGames', always_commit=False, timeout=10)
+
+
+def index_games(games_pgn_str: typing.List[str], num_skip: int = 24):
     """
     Base algorithm of the paper
     games: list of games
     """
-    for g in games:
+
+    solr = get_solr_instance()
+
+    for (game_nr, game_str) in enumerate(games_pgn_str):
+        g = chess.pgn.read_game(io.StringIO(game_str))
         board = g.board()
         for (move_nr, move) in enumerate(g.mainline_moves()):
             if move_nr > num_skip:
                 board_encoding = encode_board(board, False, False, False, False)
-
-                solr = pysolr.Solr('http://localhost:8983/solr/chessGames', always_commit=True, timeout=10)
-                solr.ping()
-
-                result = solr.search(
-                    'board:(Ra1 Ke1 Rh1 Pa2 Pb2 Pf2 Pg2 Ph2 Pc3 Pd3 Qf3 qe5 pc6 Ne6 bg6 pa7 pb7 be7 pg7 ph7 ra8 ke8 rh8)',
-                    **{
-                        "fl": "id,game_id,score,board",
-                        "group": "true",
-                        "group.field": "game_id"
-                    })
-                response = result.raw_response['grouped']['game_id']['']
-                doc_id = response['numFound']
-
                 solr.add([
                     {
-                        "id": doc_id,
-                        "game_id": 0,
+                        "id": int(f"{game_nr}{move_nr}"),
+                        "game": game_str,
+                        "game_id": game_nr,
                         "move_nr": move_nr,
                         "board": board_encoding,
                     },
@@ -152,12 +149,14 @@ def index_games(games: typing.List[chess.pgn.Game], num_skip: int = 24):
             board.push(move)
             # https://pypi.org/project/pysolr/#description
 
+    solr.commit()
+
 
 # Test for index_games
-# pgn = open("example_games/game.pgn")
-# game = chess.pgn.read_game(pgn)
-# games = [game]
-# index_games(games)
+game_str = open("example_games/game.pgn").read()
+game2_str = open("example_games/game2.pgn").read()
+games = [game_str, game2_str]
+index_games(games, num_skip=0)
 
 
 def retrieve(board: chess.Board):
@@ -166,9 +165,21 @@ def retrieve(board: chess.Board):
     TODO retrieve complete games as documents instead of boards
     """
     board_encoding = encode_board(board, False, False, False, False)
-    # add additional info to encoding with closures
-    # retrieve from index (return for test)
-    return board_encoding
+    solr = get_solr_instance()
+    result = solr.search(
+        'board:(Ra1 Nb1 Bc1 Qd1 Ke1 Bf1 Ng1 Rh1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 pa7 pb7 pc7 pd7 pe7 pf7 pg7 ph7 ra8 nb8 bc8 qd8 ke8 bf8 ng8 rh8)',
+        **{
+            "fl": "id,game,score,move_nr",
+            "group": "true",
+            "group.field": "game_id"
+        })
+
+    groups = result.grouped['game_id']['groups']
+    documents = list(map(lambda group: group['doclist']['docs'][0], groups))
+
+    # TODO improve checking
+    assert groups, "no results were found"
+    return documents
 
 # TODO test max 1 state retrieved per game
 

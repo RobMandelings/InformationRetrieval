@@ -38,6 +38,28 @@ export const initialState = {
     '7,7': new piece.Rook(false),
 }
 
+export function loadPiece(encodedPiece) {
+
+    if (encodedPiece === 'r') return new piece.Rook(true)
+    if (encodedPiece === 'R') return new piece.Rook(false)
+
+    if (encodedPiece === 'n') return new piece.Knight(true)
+    if (encodedPiece === 'N') return new piece.Knight(false)
+
+    if (encodedPiece === 'b') return new piece.Bishop(true)
+    if (encodedPiece === 'B') return new piece.Bishop(false)
+
+    if (encodedPiece === 'q') return new piece.Queen(true)
+    if (encodedPiece === 'Q') return new piece.Queen(false)
+
+    if (encodedPiece === 'k') return new piece.King(true)
+    if (encodedPiece === 'K') return new piece.King(false)
+
+    if (encodedPiece === 'p') return new piece.Pawn(true)
+    if (encodedPiece === 'P') return new piece.Pawn(false)
+
+}
+
 /**
  * Encodes the chess state into FEN encoding
  */
@@ -61,4 +83,26 @@ export function encodeState(state) {
         if (row < 7) encoding += '/';
     }
     return encoding;
+}
+
+export function decodeState(fen) {
+
+    let state = {}
+    const fenNoHeaders = fen.split(' ')[0];
+    const rows = fenNoHeaders.split('/');
+
+    for (let i = 0; i < 8; i++) {
+        const row = rows[i];
+        for (let j = 0; j < 8; j++) {
+
+            const elem = row[j];
+            if (isNaN(elem)) {
+                state[`${i},${j}`] = loadPiece(row[j]);
+            } else {
+                j += (parseInt(elem) - 1)
+            }
+        }
+    }
+
+    return state
 }

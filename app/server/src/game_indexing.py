@@ -41,19 +41,37 @@ def attack_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing.
     """
     attacked_squares = board.attacks(square)
     attacked_pieces = []
+    color = board.color_at(square)
     for attacked_square in attacked_squares:
-        if board.piece_at(attacked_square) is not None:
+        if board.piece_at(attacked_square) is not None and color is not board.color_at(attacked_square):
             attacked_pieces.append(attacked_square)
     closure = (square, attacked_pieces)
+
     return closure
 
 
-def defense_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
+def defense_closure(board: chess.Board, square: int) -> typing.Tuple[int, typing.List[int]]:
     """
-    Compute the attack closure of a piece on the given board
+    Compute the defense closure of a piece on the given board
     """
-    pass
+    attacked_squares = board.attacks(square)
+    attacked_pieces = []
+    color = board.color_at(square)
+    for attacked_square in attacked_squares:
+        if board.piece_at(attacked_square) is not None and color is board.color_at(attacked_square):
+            attacked_pieces.append(attacked_square)
+    closure = (square, attacked_pieces)
 
+    return closure
+
+
+pgn = open("example_games/game2.pgn")
+game = chess.pgn.read_game(pgn)
+board = game.board()
+for (move_nr, move) in enumerate(game.mainline_moves()):
+    if move_nr < 15:
+        board.push(move)
+test = defense_closure(board, 19)
 
 def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
     """

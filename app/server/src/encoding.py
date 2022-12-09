@@ -1,4 +1,5 @@
 import chess.pgn
+
 import closures
 from closures import Closure
 

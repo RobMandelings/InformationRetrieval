@@ -20,13 +20,20 @@
             Load FEN
           </v-card-title>
 
-          <v-card-text>
+          <v-card-text class="space-y-3 text-left">
             <v-text-field
                 label="FEN Encoding"
                 :rules="rules"
                 hide-details="auto"
                 v-model="fenEncodingInput"
             ></v-text-field>
+            <div class="space-y-2 overflow-auto" style="max-height: 300px">
+              <template v-for="fen in exampleFenStates">
+                <v-btn block @click="fenEncodingInput = fen; submitLoadFEN()">
+                  {{ fen }}
+                </v-btn>
+              </template>
+            </div>
           </v-card-text>
 
           <v-divider></v-divider>
@@ -36,7 +43,7 @@
             <v-btn
                 color="primary"
                 text
-                @click="loadFenEncodingFromInput(); dialog = false;"
+                @click="submitLoadFEN();"
             >
               Load
             </v-btn>
@@ -100,6 +107,20 @@ export default {
       retrievedDocuments: [],
       testDocument: null,
       dialog: false,
+      exampleFenStates: [
+        'rnbqkbnr/pp2pppp/2p5/8/4p3/2N2Q2/PPPP1PPP/R1B1KBNR',
+        'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
+        '8/pp2k1p1/2p3K1/6p1/3PP3/2P4P/PP4P1/2b5',
+        'r2qk1r1/pbpp1pbp/1p2p2p/8/2n1P3/2PPQ2N/PP3PPP/RN2K2R',
+        '1r2k1r1/p1p2p2/3pp2p/1P4p1/b1P5/Q5P1/P2R1P1P/5RK1',
+        'r2q1rk1/2p3pp/p1Pp4/4pPn1/2P1P3/2N5/P5PP/2RQ1RK1',
+        'r2qr1k1/pppbbpp1/3p3p/3Q4/2B1P2B/8/PPP2PPP/2KRR3',
+        'r3k2r/pp2b1pp/2p1N1b1/8/8/2PPP3/PP4PP/R3K2R',
+        '1r2k1r1/p1p2p2/3pp2p/1P4p1/8/Q5P1/P2R1P1P/5RK1',
+        'r2q1rk1/2p4p/p1Pp2p1/4pPn1/2P1P3/2N5/P5PP/2RQR1K1',
+        'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
+        'r2qk1r1/pbpp1pbp/1pn1p2p/8/2B1P3/2PP1Q1N/PP3PPP/RN2K2R'
+      ],
       fenEncodingInput: ''
     }
   },
@@ -166,8 +187,9 @@ export default {
       this.searching = false;
     },
 
-    loadFenEncodingFromInput() {
+    submitLoadFEN() {
       this.state = decodeState(this.fenEncodingInput);
+      this.dialog = false;
     }
   }
 }

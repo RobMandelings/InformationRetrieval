@@ -52,11 +52,13 @@ game2_str = open("example_games/game2.pgn").read()
 game3_str = open("example_games/game3.pgn").read()
 game4_str = open("example_games/game4.pgn").read()
 games = [game_str, game2_str, game3_str, game4_str]
-index_games(games, num_skip=0)
+
+
+# index_games(games, num_skip=0)
 
 
 def write_fen_notations(games):
-    with open('example_games/games_fen.txt', 'a') as output_file:
+    with open('example_games/games_fen.txt', 'w+') as output_file:
         for game_str in games:
             game = chess.pgn.read_game(io.StringIO(game_str))
             board = game.board()
@@ -66,7 +68,7 @@ def write_fen_notations(games):
             output_file.write('\n')
 
 
-# write_fen_notations(games)
+write_fen_notations(games)
 
 
 # index_games(games, num_skip=0)

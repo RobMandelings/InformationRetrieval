@@ -1,3 +1,5 @@
+import typing
+
 import chess.pgn
 
 import closures
@@ -8,6 +10,7 @@ This file contains the encoding functions.
 
 These functions are used as helper functions for the implementation of the indexing algorithm.
 """
+
 
 def encode_closure(closure, closure_type: Closure):
     """
@@ -42,7 +45,7 @@ def encode_board(board: chess.Board,
                  use_reachability: bool = True,
                  use_attack: bool = True,
                  use_defense: bool = True,
-                 use_ray_attack: bool = True) -> str:
+                 use_ray_attack: bool = True) -> typing.Dict[str, str]:
     """
     Encodes a board to the right format (with the given closures)
 
@@ -55,24 +58,32 @@ def encode_board(board: chess.Board,
     :return: Full encoding of the board which is used in the indexing algorithm
     """
     base_board_list = list()
-    closure_encodings = ""
+    reachability_encodings = list()
+    attack_encodings = list()
+    defense_encodings = list()
+    ray_attack_encoding = list()
+
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
             base_board_list.append(encode_piece_at(piece, square))
 
             if use_reachability:
-                r_closure_enc = closures.reachability_closure(board, square)
-                closure_encodings += f"{r_closure_enc}\n"
+                r_closure_enc = encode_closure(closures.reachability_closure(board, square), Closure.Reachability)
+                reachability_encodings.append(r_closure_enc)
             if use_attack:
-                a_closure_enc = closures.attack_closure(board, square)
-                closure_encodings += f"{a_closure_enc}\n"
+                a_closure_enc = encode_closure(closures.attack_closure(board, square), Closure.Attack)
+                attack_encodings.append(a_closure_enc)
             if use_defense:
-                d_closure_enc = closures.defense_closure(board, square)
-                closure_encodings += f"{d_closure_enc}\n"
+                d_closure_enc = encode_closure(closures.defense_closure(board, square), Closure.Defense)
+                defense_encodings.append(d_closure_enc)
             if use_ray_attack:
-                x_closure_enc = closures.ray_attack_closure(board, piece)
-                closure_encodings += f"{x_closure_enc}\n"
-
-    base_board_encoding = " ".join(base_board_list)
-    return f"{base_board_encoding}\n{closure_encodings}"
+                pass
+                # TODO x_closure_enc = encode_closure(closures.ray_attack_closure(board, piece), Closure.RayAttack)
+                # ray_attack_encoding += f"{x_closure_enc}\n"
+    return {
+        'board': " ".join(base_board_list),
+        'reachability': " ".join(filter(lambda enc: bool(enc), reachability_encodings)),
+        'attack': " ".join(filter(lambda enc: bool(enc), attack_encodings)),
+        'defense': " ".join(filter(lambda enc: bool(enc), defense_encodings))
+    }

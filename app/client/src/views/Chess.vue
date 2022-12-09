@@ -1,36 +1,82 @@
 <template>
-  <div class="flex flex-row space-x-3">
-    <div class="flex flex-col w-1/2">
-      <h1 class="text-2xl">Query</h1>
-      <div class="flex flex-col border-2 w-full h-full p-1">
-        <chess-board class="w-full h-full mb-2" :state="state"></chess-board>
-        <div class="flex flex-row justify-between">
-          <div class="flex flex-row space-x-1">
-            <button class="btn-secondary">Load
-              FEN...
-            </button>
-            <button class="btn-secondary">Load
-              PGN...
+  <div>
+    <div class="text-center">
+      <v-dialog
+          v-model="dialog"
+          width="700"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+              color="grey lighten-2"
+              dark
+              @click="dialog=true"
+          >
+            Click Me
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Load FEN
+          </v-card-title>
+
+          <v-card-text>
+            <v-text-field
+                label="FEN Encoding"
+                :rules="rules"
+                hide-details="auto"
+                v-model="fenEncodingInput"
+            ></v-text-field>
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="primary"
+                text
+                @click="loadFenEncodingFromInput(); dialog = false;"
+            >
+              Load
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+    <div class="flex flex-row space-x-3">
+      <div class="flex flex-col w-1/2">
+        <h1 class="text-2xl">Query</h1>
+        <div class="flex flex-col border-2 w-full h-full p-1">
+          <chess-board class="w-full h-full mb-2" :state="state"></chess-board>
+          <div class="flex flex-row justify-between">
+            <div class="flex flex-row space-x-1">
+              <button @click="dialog = true" class="btn-secondary">Load
+                FEN...
+              </button>
+              <button class="btn-secondary">Load
+                PGN...
+              </button>
+            </div>
+            <button @click.prevent.stop="submitSearch"
+                    class="btn-primary"
+                    :disabled="searching"
+            >
+              Search
             </button>
           </div>
-          <button @click.prevent.stop="submitSearch"
-                  class="btn-primary"
-                  :disabled="searching"
-          >
-            Search
-          </button>
         </div>
       </div>
-    </div>
-    <div class="flex flex-col w-1/2">
-      <h1 class="text-2xl">Search results</h1>
-      <div style="height: 619px">
-        <div class="border-2 h-full w-full overflow-auto">
-          <div class="space-y-2">
-            <!--            <chess-game-viewer v-if="testDocument" :document-data="testDocument"></chess-game-viewer>-->
-            <template v-for="document in retrievedDocuments">
-              <chess-game-viewer :document-data="document"></chess-game-viewer>
-            </template>
+      <div class="flex flex-col w-1/2">
+        <h1 class="text-2xl">Search results</h1>
+        <div style="height: 619px">
+          <div class="border-2 h-full w-full overflow-auto">
+            <div class="space-y-2">
+              <!--            <chess-game-viewer v-if="testDocument" :document-data="testDocument"></chess-game-viewer>-->
+              <template v-for="document in retrievedDocuments">
+                <chess-game-viewer :document-data="document"></chess-game-viewer>
+              </template>
+            </div>
           </div>
         </div>
       </div>
@@ -53,6 +99,8 @@ export default {
       searching: false,
       retrievedDocuments: [],
       testDocument: null,
+      dialog: false,
+      fenEncodingInput: ''
     }
   },
   created() {
@@ -101,6 +149,7 @@ export default {
 
           let boardStates = []
 
+          boardStates.push(decodeState(newGame.fen()))
           for (let i = 0; i < history.length; i++) {
             newGame.move(history[i])
             boardStates.push(decodeState(newGame.fen()))
@@ -115,6 +164,10 @@ export default {
       }
       // TODO show results
       this.searching = false;
+    },
+
+    loadFenEncodingFromInput() {
+      this.state = decodeState(this.fenEncodingInput);
     }
   }
 }

@@ -14,8 +14,10 @@
     "path": "^0.12.7",
     "postcss": "^8.4.19",
     "require": "^0.4.4",
+    "vite-plugin-vuetify": "^1.0.0",
     "vue": "^3.2.41",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vuetify": "^3.0.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.2.0",

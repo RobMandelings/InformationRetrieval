@@ -14,7 +14,9 @@
         <div class="w-3/5">
           <!--   Selected board vue     -->
           <!--          <div class="h-full w-full bg-blue-500"></div>-->
-          <chess-board class="h-full w-full" :state="this.selectedBoard"></chess-board>
+          <chess-board class="h-full w-full"
+                       :highlight="this.selectedMoveNr === this.documentData.move_nr"
+                       :state="this.selectedBoard"></chess-board>
         </div>
       </div>
     </div>
@@ -24,6 +26,7 @@
           <div class="flex flex-col flex-shrink-0 flex-grow-0" style="width: 150px">
             <div class="border-2 hover:border-green-600 h-full w-full">
               <chess-board
+                  :highlight="move_nr === this.documentData.move_nr"
                   :state="board"
                   @click="boardClicked(move_nr)"
               ></chess-board>

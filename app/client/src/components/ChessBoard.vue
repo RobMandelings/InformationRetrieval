@@ -31,7 +31,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
   },
-  props: ['state'],
+  props: ['state', 'highlight'],
   computed: {},
   methods: {
     getPiece(row, col) {
@@ -41,9 +41,8 @@ export default {
       let black = row % 2 !== 0;
       if ((row * 8 + column) % 2 !== 0) black = !black;
 
-      if (black) return 'bg-amber-50';
-      else return 'bg-amber-800';
-
+      if (black) return this.highlight ? 'bg-emerald-50' : 'bg-amber-50';
+      else return this.highlight ? 'bg-emerald-800' : 'bg-amber-800';
     },
     handleResize() {
       if (this.$refs["chess-board"]) {

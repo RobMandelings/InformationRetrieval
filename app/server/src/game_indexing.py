@@ -24,14 +24,18 @@ def index_games(games_pgn_str: typing.List[str], num_skip: int = 24):
         board = g.board()
         for (move_nr, move) in enumerate(g.mainline_moves()):
             if move_nr > num_skip:
-                board_encoding = encoding.encode_board(board, False, False, False, False)
+                board_encoding = encoding.encode_board(board)
+
                 solr.add([
                     {
                         "id": int(f"{game_nr}{move_nr}"),
                         "game": game_str,
                         "game_id": game_nr,
                         "move_nr": move_nr,
-                        "board": board_encoding,
+                        "board": board_encoding['board'],
+                        "reachability": board_encoding["reachability"],
+                        "attack": board_encoding["attack"],
+                        "defense": board_encoding["defense"],
                     },
                 ])
                 # TODO add "game" field for retrieval of document
@@ -51,16 +55,41 @@ games = [game_str, game2_str, game3_str, game4_str]
 index_games(games, num_skip=0)
 
 
+def write_fen_notations(games):
+    with open('example_games/games_fen.txt', 'a') as output_file:
+        for game_str in games:
+            game = chess.pgn.read_game(io.StringIO(game_str))
+            board = game.board()
+            for (move_nr, move) in enumerate(game.mainline_moves()):
+                output_file.write(f"{board.fen().split()[0]}\n")
+                board.push(move)
+            output_file.write('\n')
+
+
+# write_fen_notations(games)
+
+
+# index_games(games, num_skip=0)
+
+
 def retrieve(board: chess.Board):
     """
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
     """
-    board_encoding = encoding.encode_board(board, False, False, False, False)
+    board_encoding = encoding.encode_board(board)
     solr = get_solr_instance()
+
+    query = f'board:({board_encoding["board"]}) '
+    if board_encoding["reachability"]:
+        query += f'reachability:({board_encoding["reachability"]}) '
+    if board_encoding["attack"]:
+        query += f'attack:({board_encoding["attack"]}) '
+    if board_encoding["defense"]:
+        query += f'defense:({board_encoding["defense"]}) '
+
     result = solr.search(
-        # 'board:(Ra1 Nb1 Bc1 Qd1 Ke1 Bf1 Ng1 Rh1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Pe4 pa7 pb7 pc7 pd7 pe7 pf7 pg7 ph7 ra8 nb8 bc8 qd8 ke8 bf8 ng8 rh8)',
-        'board:(Ra1 Bc1 Ke1 Bf1 Ng1 Rh1 Pa2 Pb2 Pc2 Pd2 Pf2 Pg2 Ph2 Qf3 Ne4 pc6 pa7 pb7 nd7 pe7 pf7 pg7 ph7 ra8 bc8 qd8 ke8 bf8 ng8 rh8)',
+        query,
         **{
             "fl": "id,game,score,move_nr",
             "group": "true",

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row space-x-3">
-    <div class="flex flex-col space-y-2">
-      <chess-board style="width: 500px" :state="state"></chess-board>
+    <div class="flex flex-col space-y-2 w-1/2">
+      <chess-board class="w-full h-full" :state="state"></chess-board>
       <div class="flex flex-row justify-between">
         <button class="p-1 text-white bg-gray-500 hover:bg-gray-200 transition">Load FEN...</button>
         <button @click.prevent.stop="submitSearch"
@@ -12,14 +12,12 @@
         </button>
       </div>
     </div>
-    <div class="flex flex-col" style="min-width: 500px">
+    <div class="flex flex-col w-1/2">
       <h1 class="text-2xl">Search results</h1>
-      <div class="border-2 h-full w-full space-y-2">
+      <div class="border-2 max-h-full w-full space-y-2" style="min-height: 300px; min-width: 300px">
+        <!--        <chess-game-viewer v-if="testDocument" :document-data="testDocument"></chess-game-viewer>-->
         <template v-for="document in retrievedDocuments">
-          <div class="flex flex-col">
-            <h3 class="text-lg">{{ document.game._header['Event'] }}, id: {{ document.id }}</h3>
-            <chess-board style="width: 300px" :state="document.boardStates[document.move_nr - 1]"></chess-board>
-          </div>
+          <chess-game-viewer :document-data="document"></chess-game-viewer>
         </template>
       </div>
     </div>
@@ -27,19 +25,41 @@
 </template>
 
 <script>
-import {initialState, encodeState, decodeState} from "@/assets/js/StateLoader.js";
+import {initialState, testGame, encodeState, decodeState} from "@/assets/js/StateLoader.js";
 import {Chess} from 'chess.js';
 import ChessBoard from "@/components/ChessBoard.vue";
+import ChessGameViewer from "@/components/ChessGameViewer.vue";
 import axios from 'axios';
 
 export default {
-  components: {ChessBoard},
+  components: {ChessBoard, ChessGameViewer},
   data() {
     return {
       state: initialState,
       searching: false,
-      retrievedDocuments: []
+      retrievedDocuments: [],
+      testDocument: null,
     }
+  },
+  created() {
+    const game = new Chess();
+    game.loadPgn(testGame.game);
+
+    let boards = []
+
+    const chessGame = new Chess();
+    boards.push(decodeState(chessGame.fen()));
+    for (let i = 0; i < game.history().length; i++) {
+      chessGame.move(game.history()[i]);
+      boards.push(decodeState(chessGame.fen()));
+    }
+
+    this.testDocument = {
+      move_nr: 50,
+      boards: boards,
+      game: game
+    }
+    console.log('hi')
   },
   computed: {},
   methods: {
@@ -67,12 +87,13 @@ export default {
 
           let boardStates = []
 
-          for (let i = 0; i < document.move_nr; i++) {
+          for (let i = 0; i < history.length; i++) {
             newGame.move(history[i])
             boardStates.push(decodeState(newGame.fen()))
           }
           document['game'] = game;
-          document['boardStates'] = boardStates;
+          document['boards'] = boardStates;
+          document['move_nr'] = document.move_nr;
         });
         this.retrievedDocuments = documents;
       } catch (e) {

@@ -1,13 +1,14 @@
 <template>
-  <div class="w-full">
-    <div class="grid grid-cols-8 grid-rows-8 gap-0 w-full">
+  <div ref="chess-board">
+    <div class="grid gap-0"
+         style="grid-template-rows: repeat(8, minmax(0, 1fr));grid-template-columns: repeat(8,  minmax(0, 1fr)); aspect-ratio: 1/1"
+         :style="{width: `${boardWidth}px`}"
+    >
       <template v-for="(i, row) in 8" :key="row">
-        <div class="text-xl" v-for="(j, col) in 8" :key="col">
-          <div :class="getBackgroundForPosition(row, col)" style="aspect-ratio: 1/1">
-            <div v-if="getPiece(row,col)">
-              <img class="h-full"
-                   :src="getPiece(row,col).imgPath" :alt="getPiece(row,col).name"/>
-            </div>
+        <div class="text-xl" :class="getBackgroundForPosition(row, col)" v-for="(j, col) in 8" :key="col">
+          <div v-if="getPiece(row,col)">
+            <img class="h-full"
+                 :src="getPiece(row,col).imgPath" :alt="getPiece(row,col).name"/>
           </div>
         </div>
       </template>
@@ -19,7 +20,16 @@
 export default {
   name: 'ChessBoard',
   data() {
-
+    return {
+      boardWidth: 0
+    }
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize()
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
   },
   props: ['state'],
   computed: {},
@@ -34,6 +44,11 @@ export default {
       if (black) return 'bg-amber-50';
       else return 'bg-amber-800';
 
+    },
+    handleResize() {
+      if (this.$refs["chess-board"]) {
+        this.boardWidth = Math.min(this.$refs["chess-board"].offsetWidth, this.$refs["chess-board"].offsetHeight)
+      }
     }
   }
 }

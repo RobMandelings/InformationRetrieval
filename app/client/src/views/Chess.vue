@@ -1,24 +1,38 @@
 <template>
   <div class="flex flex-row space-x-3">
-    <div class="flex flex-col space-y-2 w-1/2">
-      <chess-board class="w-full h-full" :state="state"></chess-board>
-      <div class="flex flex-row justify-between">
-        <button class="p-1 text-white bg-gray-500 hover:bg-gray-200 transition">Load FEN...</button>
-        <button @click.prevent.stop="submitSearch"
-                class="p-1 text-white bg-green-700 hover:bg-green-500 transition disabled:bg-red-200"
-                :disabled="searching"
-        >
-          Search
-        </button>
+    <div class="flex flex-col w-1/2">
+      <h1 class="text-2xl">Query</h1>
+      <div class="flex flex-col border-2 w-full h-full p-1">
+        <chess-board class="w-full h-full mb-2" :state="state"></chess-board>
+        <div class="flex flex-row justify-between">
+          <div class="flex flex-row space-x-1">
+            <button class="btn-secondary">Load
+              FEN...
+            </button>
+            <button class="btn-secondary">Load
+              PGN...
+            </button>
+          </div>
+          <button @click.prevent.stop="submitSearch"
+                  class="btn-primary"
+                  :disabled="searching"
+          >
+            Search
+          </button>
+        </div>
       </div>
     </div>
     <div class="flex flex-col w-1/2">
       <h1 class="text-2xl">Search results</h1>
-      <div class="border-2 max-h-full w-full space-y-2" style="min-height: 300px; min-width: 300px">
-        <!--        <chess-game-viewer v-if="testDocument" :document-data="testDocument"></chess-game-viewer>-->
-        <template v-for="document in retrievedDocuments">
-          <chess-game-viewer :document-data="document"></chess-game-viewer>
-        </template>
+      <div style="height: 619px">
+        <div class="border-2 h-full w-full overflow-auto">
+          <div class="space-y-2">
+            <!--            <chess-game-viewer v-if="testDocument" :document-data="testDocument"></chess-game-viewer>-->
+            <template v-for="document in retrievedDocuments">
+              <chess-game-viewer :document-data="document"></chess-game-viewer>
+            </template>
+          </div>
+        </div>
       </div>
     </div>
   </div>

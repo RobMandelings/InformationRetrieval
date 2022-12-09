@@ -1,17 +1,17 @@
 <template>
-  <div class="flex flex-col" style="height: 500px">
+  <div class="flex flex-col">
     <div class="h-2/3">
       <div class="flex flex-row h-full w-full">
-        <div class="w-1/3">
+        <div class="w-2/5">
           <!--   General game data     -->
           <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Game Data</h2>
-          <ul class="space-y-1 max-w-md list-none list-inside text-gray-500 dark:text-gray-400">
-            <li>Event: {{ this.event }}</li>
-            <li>{{ this.whiteName }} (white) vs {{ this.blackName }} (black)</li>
-            <li>{{ this.dateTime }}</li>
-          </ul>
+          <div class="flex flex-col space-y-1 text-left">
+            <div>Event: {{ this.event }}</div>
+            <div>Players: {{ this.whiteName }} (white) vs {{ this.blackName }} (black)</div>
+            <div>Datetime: {{ this.dateTime }}</div>
+          </div>
         </div>
-        <div class="w-2/3">
+        <div class="w-3/5">
           <!--   Selected board vue     -->
           <!--          <div class="h-full w-full bg-blue-500"></div>-->
           <chess-board class="h-full w-full" :state="this.selectedBoard"></chess-board>
@@ -19,15 +19,16 @@
       </div>
     </div>
     <div class="h-1/3">
-      <div class="flex h-full w-full overflow-auto gap-2">
+      <div class="flex flex-row h-full w-full gap-2 overflow-x-auto">
         <template v-for="(board, move_nr) in boards">
-          <div class="flex-shrink-0 flex-grow-0" style="aspect-ratio: 1/1">
+          <div class="flex flex-col flex-shrink-0 flex-grow-0" style="width: 150px">
             <div class="border-2 hover:border-green-600 h-full w-full">
-              <chess-board class="h-full w-full"
-                           :state="board"
-                           @click="boardClicked(move_nr)"
+              <chess-board
+                  :state="board"
+                  @click="boardClicked(move_nr)"
               ></chess-board>
             </div>
+            <div>Move {{ move_nr }}</div>
           </div>
         </template>
       </div>

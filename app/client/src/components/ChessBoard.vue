@@ -1,8 +1,8 @@
+<!--         :style="{width: `${boardWidth}px`}"-->
 <template>
   <div ref="chess-board">
     <div class="grid gap-0"
-         style="grid-template-rows: repeat(8, minmax(0, 1fr));grid-template-columns: repeat(8,  minmax(0, 1fr)); aspect-ratio: 1/1"
-         :style="{width: `${boardWidth}px`}"
+         style="grid-template-rows: repeat(8, minmax(0, 1fr));grid-template-columns: repeat(8,  minmax(0, 1fr));"
     >
       <template v-for="(i, row) in 8" :key="row">
         <div class="text-xl" :class="getBackgroundForPosition(row, col)" v-for="(j, col) in 8" :key="col">
@@ -47,7 +47,7 @@ export default {
     },
     handleResize() {
       if (this.$refs["chess-board"]) {
-        this.boardWidth = Math.min(this.$refs["chess-board"].offsetWidth, this.$refs["chess-board"].offsetHeight)
+        // this.boardWidth = Math.min(this.$refs["chess-board"].offsetWidth, this.$refs["chess-board"].offsetHeight)
       }
     }
   }

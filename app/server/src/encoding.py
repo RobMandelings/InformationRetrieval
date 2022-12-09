@@ -3,8 +3,21 @@ import chess.pgn
 import closures
 from closures import Closure
 
+"""
+This file contains the encoding functions.
+
+These functions are used as helper functions for the implementation of the indexing algorithm.
+"""
 
 def encode_closure(closure, closure_type: Closure):
+    """
+    Encodes a closure based on which closure type to the correct format
+
+    The output of this function is added to the documents in the index
+    :param closure: return value from a closure function
+    :param closure_type: the type of closure to ensure right formatting
+    :return: string of encoded closure
+    """
     if closure_type is Closure.Reachability:
         # typing.Dict[str, float]
         closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
@@ -17,6 +30,9 @@ def encode_closure(closure, closure_type: Closure):
 
 
 def encode_piece_at(piece, square):
+    """
+    TODO SEE USAGES IF THIS IS STILL USEFUL
+    """
     assert piece
     assert 0 <= square <= chess.SQUARES[-1]
     return f"{piece.symbol()}{chess.square_name(square)}"
@@ -27,6 +43,17 @@ def encode_board(board: chess.Board,
                  use_attack: bool = True,
                  use_defense: bool = True,
                  use_ray_attack: bool = True) -> str:
+    """
+    Encodes a board to the right format (with the given closures)
+
+    Uses the encode_closure function
+    :param board: a chess board position
+    :param use_reachability: Whether to use reachability closure or not
+    :param use_attack: Whether to use attack closure or not
+    :param use_defense: Whether to use defense closure or not
+    :param use_ray_attack: Whether to use ray attack closure or not
+    :return: Full encoding of the board which is used in the indexing algorithm
+    """
     base_board_list = list()
     closure_encodings = ""
     for square in chess.SQUARES:

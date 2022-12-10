@@ -1,6 +1,7 @@
 import enum
-import chess.pgn
 import typing
+
+import chess.pgn
 
 """
 This file contains all the closures possible to use to calculate the similarity between chess boards.
@@ -18,7 +19,7 @@ For more info about closures and encoding we refer to our report.
 """
 
 
-class Closure(enum.Enum):
+class Metric(enum.Enum):
     """
     An enum containing all closures and their corresponding symbols used for encoding
     """
@@ -26,6 +27,20 @@ class Closure(enum.Enum):
     Attack = '>'
     Defense = '<'
     RayAttack = '='
+
+    @staticmethod
+    def from_str(metric_name: str):
+        
+        if metric_name.lower() == 'reachability':
+            return Metric.Reachability
+        elif metric_name.lower() == 'attack':
+            return Metric.Attack
+        elif metric_name.lower() == 'defense':
+            return Metric.Defense
+        elif metric_name.lower() == 'rayattack':
+            return Metric.RayAttack
+
+        raise ValueError('Could not convert string to metric')
 
 
 def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, float]:

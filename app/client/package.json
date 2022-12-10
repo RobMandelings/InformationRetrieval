@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.0.96",
     "axios": "^1.2.0",
     "chess.js": "^1.0.0-alpha.0",
     "path": "^0.12.7",

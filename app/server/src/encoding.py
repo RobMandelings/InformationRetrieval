@@ -3,7 +3,7 @@ import typing
 import chess.pgn
 
 import closures
-from closures import Closure
+from closures import Metric
 
 """
 This file contains the encoding functions.
@@ -12,7 +12,7 @@ These functions are used as helper functions for the implementation of the index
 """
 
 
-def encode_closure(closure, closure_type: Closure):
+def encode_closure(closure, closure_type: Metric):
     """
     Encodes a closure based on which closure type to the correct format
 
@@ -21,11 +21,11 @@ def encode_closure(closure, closure_type: Closure):
     :param closure_type: the type of closure to ensure right formatting
     :return: string of encoded closure
     """
-    if closure_type is Closure.Reachability:
+    if closure_type is Metric.Reachability:
         # typing.Dict[str, float]
         closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
         return " ".join(closure_encodings)
-    elif closure_type in {Closure.Attack, Closure.Defense}:
+    elif closure_type in {Metric.Attack, Metric.Defense}:
         closure_encodings = []
         for (item_nr, item) in enumerate(closure[1]):
             closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")
@@ -42,48 +42,60 @@ def encode_piece_at(piece, square):
 
 
 def encode_board(board: chess.Board,
-                 use_reachability: bool = True,
-                 use_attack: bool = True,
-                 use_defense: bool = True,
-                 use_ray_attack: bool = True) -> typing.Dict[str, str]:
+                 metrics: typing.List[Metric]) -> typing.Dict[str, str]:
     """
     Encodes a board to the right format (with the given closures)
 
     Uses the encode_closure function
     :param board: a chess board position
-    :param use_reachability: Whether to use reachability closure or not
-    :param use_attack: Whether to use attack closure or not
-    :param use_defense: Whether to use defense closure or not
-    :param use_ray_attack: Whether to use ray attack closure or not
+    :param metrics: optional metrics to improve the encoding of the board
     :return: Full encoding of the board which is used in the indexing algorithm
     """
     base_board_list = list()
-    reachability_encodings = list()
-    attack_encodings = list()
-    defense_encodings = list()
-    ray_attack_encoding = list()
+    metric_encodings = dict()
 
-    for square in chess.SQUARES:
-        piece = board.piece_at(square)
-        if piece:
-            base_board_list.append(encode_piece_at(piece, square))
+    piece_squares = list(map(lambda square: (board.piece_at(square), square), chess.SQUARES))
+    piece_squares = list(filter(lambda piece_square: bool(piece_square[0]), piece_squares))
 
-            if use_reachability:
-                r_closure_enc = encode_closure(closures.reachability_closure(board, square), Closure.Reachability)
-                reachability_encodings.append(r_closure_enc)
-            if use_attack:
-                a_closure_enc = encode_closure(closures.attack_closure(board, square), Closure.Attack)
-                attack_encodings.append(a_closure_enc)
-            if use_defense:
-                d_closure_enc = encode_closure(closures.defense_closure(board, square), Closure.Defense)
-                defense_encodings.append(d_closure_enc)
-            if use_ray_attack:
-                pass
-                # TODO x_closure_enc = encode_closure(closures.ray_attack_closure(board, piece), Closure.RayAttack)
-                # ray_attack_encoding += f"{x_closure_enc}\n"
+    for (piece, square) in piece_squares:
+        base_board_list.append(encode_piece_at(piece, square))
+
+    if Metric.Reachability in metrics:
+        reachability_encodings = list()
+        for (piece, square) in piece_squares:
+            encoding = encode_closure(closures.reachability_closure(board, square), Metric.Reachability)
+            if encoding:
+                reachability_encodings.append(encoding)
+        metric_encodings[Metric.Reachability] = " ".join(reachability_encodings)
+
+    if Metric.Attack in metrics:
+        attack_encodings = list()
+        for (piece, square) in piece_squares:
+            encoding = encode_closure(closures.attack_closure(board, square), Metric.Attack)
+            if encoding:
+                attack_encodings.append(encoding)
+        metric_encodings[Metric.Attack] = " ".join(attack_encodings)
+
+    if Metric.Defense in metrics:
+        defense_encodings = list()
+        for (piece, square) in piece_squares:
+            encoding = encode_closure(closures.defense_closure(board, square), Metric.Defense)
+            if encoding:
+                defense_encodings.append(encoding)
+        metric_encodings[Metric.Defense] = " ".join(defense_encodings)
+
+    if Metric.RayAttack in metrics:
+        pass
+        # TODO
+        # ray_attack_encodings = list()
+        # for square in chess.SQUARES:
+        #     piece = board.piece_at(square)
+        #     if piece:
+        #         r_closure_enc = encode_closure(closures.ray_attack_closure(board, square), Metric.RayAttack)
+        #         ray_attack_encodings.append(r_closure_enc)
+        # metrics[Metric.RayAttack] = " ".join(ray_attack_encodings)
+
     return {
         'board': " ".join(base_board_list),
-        'reachability': " ".join(filter(lambda enc: bool(enc), reachability_encodings)),
-        'attack': " ".join(filter(lambda enc: bool(enc), attack_encodings)),
-        'defense': " ".join(filter(lambda enc: bool(enc), defense_encodings))
+        'metrics': metric_encodings
     }

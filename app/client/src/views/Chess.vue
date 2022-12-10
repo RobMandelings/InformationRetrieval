@@ -1,39 +1,56 @@
 <template>
   <div>
+    <v-dialog
+        v-model="fenDialog"
+        width="700"
+    >
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Load FEN
+        </v-card-title>
+
+        <v-card-text class="space-y-3 text-left">
+          <v-text-field
+              label="FEN Encoding"
+              :rules="rules"
+              hide-details="auto"
+              v-model="fenEncodingInput"
+          ></v-text-field>
+          <div class="space-y-2 overflow-auto" style="max-height: 300px">
+            <template v-for="fen in exampleFenStates">
+              <v-btn block @click="fenEncodingInput = fen; submitLoadFEN()">
+                {{ fen }}
+              </v-btn>
+            </template>
+          </div>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="primary"
+              text
+              @click="submitLoadFEN();"
+          >
+            Load
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <div class="text-center">
       <v-dialog
-          v-model="dialog"
+          v-model="pgnDialog"
           width="700"
       >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-              color="grey lighten-2"
-              dark
-              @click="dialog=true"
-          >
-            Click Me
-          </v-btn>
-        </template>
-
         <v-card>
           <v-card-title class="text-h5 grey lighten-2">
-            Load FEN
+            Load PGN
           </v-card-title>
 
           <v-card-text class="space-y-3 text-left">
-            <v-text-field
-                label="FEN Encoding"
-                :rules="rules"
-                hide-details="auto"
-                v-model="fenEncodingInput"
-            ></v-text-field>
-            <div class="space-y-2 overflow-auto" style="max-height: 300px">
-              <template v-for="fen in exampleFenStates">
-                <v-btn block @click="fenEncodingInput = fen; submitLoadFEN()">
-                  {{ fen }}
-                </v-btn>
-              </template>
-            </div>
+            <v-file-input v-model="pgnFile" clearable label="File input"></v-file-input>
           </v-card-text>
 
           <v-divider></v-divider>
@@ -58,10 +75,10 @@
           <chess-board class="w-full h-full mb-2" :state="state"></chess-board>
           <div class="flex flex-row justify-between">
             <div class="flex flex-row space-x-1">
-              <button @click="dialog = true" class="btn-secondary">Load
+              <button @click="fenDialog = true" class="btn-secondary">Load
                 FEN...
               </button>
-              <button class="btn-secondary">Load
+              <button @click="pgnDialog = true" class="btn-secondary">Load
                 PGN...
               </button>
             </div>
@@ -88,6 +105,34 @@
         </div>
       </div>
     </div>
+    <div class="flex flex-col items-center">
+      <div class="flex flex-row">
+        <v-checkbox
+            hide-details
+            v-model="selectedMetrics"
+            label="Reachability"
+            value="Reachability"
+        ></v-checkbox>
+        <v-checkbox
+            hide-details
+            v-model="selectedMetrics"
+            label="Attack"
+            value="Attack"
+        ></v-checkbox>
+        <v-checkbox
+            hide-details
+            v-model="selectedMetrics"
+            label="Defense"
+            value="Defense"
+        ></v-checkbox>
+        <v-checkbox
+            hide-details
+            v-model="selectedMetrics"
+            label="Ray Attack"
+            value="RayAttack"
+        ></v-checkbox>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -106,7 +151,10 @@ export default {
       searching: false,
       retrievedDocuments: [],
       testDocument: null,
-      dialog: false,
+      pgnFile: null,
+      fenDialog: false,
+      pgnDialog: false,
+      selectedMetrics: [],
       exampleFenStates: [
         'rnbqkbnr/pp2pppp/2p5/8/4p3/2N2Q2/PPPP1PPP/R1B1KBNR',
         'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
@@ -158,7 +206,7 @@ export default {
         const result = await axios(
             {
               method: 'get',
-              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}`
+              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&metrics=${this.selectedMetrics.join(',')}`
             });
 
         const documents = result.data.results;
@@ -189,7 +237,7 @@ export default {
 
     submitLoadFEN() {
       this.state = decodeState(this.fenEncodingInput);
-      this.dialog = false;
+      this.fenDialog = false;
     }
   }
 }

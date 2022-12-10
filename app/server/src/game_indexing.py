@@ -4,6 +4,7 @@ import typing
 import chess.pgn
 import pysolr
 
+import closures
 import encoding
 
 
@@ -74,21 +75,18 @@ write_fen_notations(games)
 # index_games(games, num_skip=0)
 
 
-def retrieve(board: chess.Board):
+def retrieve(board: chess.Board, metrics: typing.List[closures.Metric]):
     """
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
     """
-    board_encoding = encoding.encode_board(board)
+    board_encoding = encoding.encode_board(board, metrics)
     solr = get_solr_instance()
 
     query = f'board:({board_encoding["board"]}) '
-    if board_encoding["reachability"]:
-        query += f'reachability:({board_encoding["reachability"]}) '
-    if board_encoding["attack"]:
-        query += f'attack:({board_encoding["attack"]}) '
-    if board_encoding["defense"]:
-        query += f'defense:({board_encoding["defense"]}) '
+    for metric, enc in board_encoding['metrics'].items():
+        if enc:
+            query += f'{metric.name.lower()}:({enc}) '
 
     result = solr.search(
         query,

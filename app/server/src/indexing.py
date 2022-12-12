@@ -1,7 +1,6 @@
 import io
 import os
 import sys
-import typing
 
 import chess.pgn
 import pysolr
@@ -13,10 +12,6 @@ import encoding
 
 class MovePushException(Exception):
     pass
-
-
-def get_solr_instance() -> pysolr.Solr:
-    return pysolr.Solr('http://localhost:8983/solr/chessGames', always_commit=False, timeout=10)
 
 
 def create_documents(game_id, game_string, num_skip):
@@ -48,19 +43,20 @@ def create_documents(game_id, game_string, num_skip):
     return documents
 
 
-def index_games(filenames, num_skip: int = 24, delete_previous_docs=False):
+def delete_all_documents(solr_instance: pysolr.Solr):
+    solr_instance.delete(q='*:*')
+    solr_instance.commit()
+
+
+def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
+                commit_interval=100):
     """
     Base algorithm of the paper
     games: list of games
+    :commit_interval: amount of games between commits (in case many games are indexed at once)
     """
 
-    solr = get_solr_instance()
-
-    if delete_previous_docs:
-        solr.delete(q='*:*')
-        solr.commit()
-
-    game_id = solr.search('game_id:*').raw_response['response']['numFound']
+    game_id = solr_instance.search('game_id:*').raw_response['response']['numFound']
 
     for filename in filenames:
 
@@ -78,8 +74,11 @@ def index_games(filenames, num_skip: int = 24, delete_previous_docs=False):
                     documents = create_documents(game_id, game_string, num_skip)
 
                     if len(documents):
-                        solr.add(documents)
+                        solr_instance.add(documents)
                         game_id += 1
+
+                        if game_id % commit_interval == 0:
+                            solr_instance.commit()
 
                 except MovePushException as e:
                     print(f"A move push exception occurred for game id {game_id}. This game will not be indexed.")
@@ -90,7 +89,7 @@ def index_games(filenames, num_skip: int = 24, delete_previous_docs=False):
             pbar.update((sys.getsizeof(line) - sys.getsizeof('\n')) / 1000_000)
         pbar.close()
 
-    solr.commit()
+    solr_instance.commit()
 
 
 # Test for index_games
@@ -99,8 +98,6 @@ def index_games(filenames, num_skip: int = 24, delete_previous_docs=False):
 # game3_str = open("example_games/game3.pgn").read()
 # game4_str = open("example_games/game4.pgn").read()
 # games = [game_str, game2_str, game3_str, game4_str]
-
-index_games(["game_data/lichess_db_standard_rated_2013-01.pgn"], num_skip=24, delete_previous_docs=True)
 
 
 def write_fen_notations(games):
@@ -113,40 +110,10 @@ def write_fen_notations(games):
                 board.push(move)
             output_file.write('\n')
 
-
 # write_fen_notations(games)
 
 
 # index_games(games, num_skip=0)
-
-
-def retrieve(board: chess.Board, metrics: typing.List[closures.Metric]):
-    """
-    Retrieves a ranked list of game states provided the query
-    TODO retrieve complete games as documents instead of boards
-    """
-    board_encoding = encoding.encode_board(board, metrics)
-    solr = get_solr_instance()
-
-    query = f'board:({board_encoding["board"]}) '
-    for metric, enc in board_encoding['metrics'].items():
-        if enc:
-            query += f'{metric.name.lower()}:({enc}) '
-
-    result = solr.search(
-        query,
-        **{
-            "fl": "id,game,score,move_nr",
-            "group": "true",
-            "group.field": "game_id"
-        })
-
-    groups = result.grouped['game_id']['groups']
-    documents = list(map(lambda group: group['doclist']['docs'][0], groups))
-
-    # TODO improve checking
-    assert groups, "no results were found"
-    return documents
 
 # TODO test max 1 state retrieved per game
 

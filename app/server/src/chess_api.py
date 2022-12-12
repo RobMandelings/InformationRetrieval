@@ -4,7 +4,7 @@ from flask import request
 from flask_restful import Resource
 
 import closures
-from game_indexing import retrieve
+from indexing import retrieve
 
 
 class SearchResource(Resource):

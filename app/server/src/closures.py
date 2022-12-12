@@ -30,7 +30,7 @@ class Metric(enum.Enum):
 
     @staticmethod
     def from_str(metric_name: str):
-        
+
         if metric_name.lower() == 'reachability':
             return Metric.Reachability
         elif metric_name.lower() == 'attack':
@@ -64,9 +64,10 @@ def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, fl
     possible_moves = [move for move in legal_moves_list if move.uci()[:2] == square_name]
     closure = {}
     for move in possible_moves:
-        d = chess.square_distance(square, chess.parse_square(move.uci()[2:]))
+        # TODO maybe mention promotion in paper, update slicing indices to handle the promotion case
+        d = chess.square_distance(square, chess.parse_square(move.uci()[2:4]))
         weight = 1 - ((7 * d) / 64)
-        key = piece.symbol() + move.uci()[2:]
+        key = piece.symbol() + move.uci()[2:4]
         closure[key] = weight
 
     return closure

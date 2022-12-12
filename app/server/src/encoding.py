@@ -51,6 +51,7 @@ def encode_board(board: chess.Board,
     :param metrics: optional metrics to improve the encoding of the board
     :return: Full encoding of the board which is used in the indexing algorithm
     """
+
     base_board_list = list()
     metric_encodings = dict()
 

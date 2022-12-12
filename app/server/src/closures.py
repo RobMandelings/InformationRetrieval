@@ -27,6 +27,7 @@ class Metric(enum.Enum):
     Attack = '>'
     Defense = '<'
     RayAttack = '='
+    Pin = ''
 
     @staticmethod
     def from_str(metric_name: str):
@@ -43,7 +44,7 @@ class Metric(enum.Enum):
         raise ValueError('Could not convert string to metric')
 
 
-def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, float]:
+def reachability_closure(board: chess.Board, square: chess.Square) -> typing.Dict[str, float]:
     """
     Computes the reachability closure of piece p on square (x,y) with a given board:
 
@@ -73,7 +74,7 @@ def reachability_closure(board: chess.Board, square: int) -> typing.Dict[str, fl
     return closure
 
 
-def attack_closure(board: chess.Board, square: int) -> typing.Tuple[str, typing.List[str]]:
+def attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[str, typing.List[str]]:
     """
     Computes the attack closure of piece p on square (x,y) with a given board:
 
@@ -99,7 +100,7 @@ def attack_closure(board: chess.Board, square: int) -> typing.Tuple[str, typing.
     return closure
 
 
-def defense_closure(board: chess.Board, square: int) -> typing.Tuple[str, typing.List[str]]:
+def defense_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[str, typing.List[str]]:
     """
     Computes the defense closure of piece p on square (x,y) with a given board:
 
@@ -131,11 +132,18 @@ def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[st
     """
     pass
 
-# pgn = open("example_games/game2.pgn")
-# game = chess.pgn.read_game(pgn)
-# board = game.board()
-# for move in game.mainline_moves():
-#     board.push(move)
-# test = defense_closure(board, 3)
-# encoded_closure = encode_closure(test, Closure.Defense)
-# print(encoded_closure)
+
+def pin_closure(board: chess.Board, square: chess.Square) -> bool:
+    """
+    Computes the pin closure of a piece on the given board
+
+    """
+    return board.is_pinned(board.color_at(square), square)
+
+
+pgn = open("example_games/game5.pgn")
+game = chess.pgn.read_game(pgn)
+board = game.board()
+for move in game.mainline_moves():
+    board.push(move)
+x = 0

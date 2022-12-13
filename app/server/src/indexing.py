@@ -109,8 +109,10 @@ def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
             pbar.update((sys.getsizeof(line) - sys.getsizeof('\n')) / 1000_000)
             line = file.readline()
 
+
+
         if filename in in_progress:
-            del in_progress["filename"]
+            del in_progress[f"{filename}"]
         update_progress_json(in_progress)
 
         pbar.close()

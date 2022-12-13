@@ -44,7 +44,9 @@ class Metric(enum.Enum):
         raise ValueError('Could not convert string to metric')
 
 
-def reachability_closure(board: chess.Board, square: chess.Square) -> typing.Dict[str, float]:
+# TODO can be improved: apply mask, nand with moves, ...
+# TODO legal moves is expensive, so added as parameter. However could be better
+def reachability_closure(board: chess.Board, square: chess.Square, legal_moves_list: list) -> typing.Dict[str, float]:
     """
     Computes the reachability closure of piece p on square (x,y) with a given board:
 
@@ -61,7 +63,6 @@ def reachability_closure(board: chess.Board, square: chess.Square) -> typing.Dic
     """
     piece = board.piece_at(square)
     square_name = chess.square_name(square)
-    legal_moves_list = list(board.legal_moves)
     possible_moves = [move for move in legal_moves_list if move.uci()[:2] == square_name]
     closure = {}
     for move in possible_moves:

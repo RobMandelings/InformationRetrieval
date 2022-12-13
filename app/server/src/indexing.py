@@ -55,7 +55,7 @@ def update_progress_json(in_progress: dict):
 
 
 def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
-                commit_interval=100, in_progress: dict = None):
+                commit_interval=100, in_progress: dict = None) :
     """
     Base algorithm of the paper
     games: list of games

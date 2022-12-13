@@ -2,6 +2,7 @@ import json
 import os
 
 import argparse
+import pysolr
 
 import indexing
 import solr_util
@@ -31,7 +32,21 @@ def main():
                 print("Could not load in_progress file. Skipping it.")
 
     if len(args.filenames):
-        indexing.index_games(solr, args.filenames, 24, commit_interval=args.commit_interval, in_progress=in_progress)
+
+        indexed = False
+        nr_retries = 0
+        while not indexed and nr_retries < 5:
+            try:
+
+                if solr.ping():
+                    nr_retries = 0
+
+                indexing.index_games(solr, args.filenames, 24, commit_interval=args.commit_interval,
+                                     in_progress=in_progress)
+                indexed = True
+            except pysolr.SolrError as e:
+                print("Solr Error has occurred. Restarting.")
+                nr_retries += 1
     pass
 
 

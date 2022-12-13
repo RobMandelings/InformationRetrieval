@@ -55,7 +55,7 @@ def update_progress_json(in_progress: dict):
 
 
 def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
-                commit_interval=100, in_progress: dict = None) :
+                commit_interval=100, in_progress: dict = None):
     """
     Base algorithm of the paper
     games: list of games
@@ -70,6 +70,7 @@ def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
         file = open(filename)
 
         game_string = ""
+        documents = []
 
         in_progress = in_progress if in_progress else {}
         resume_at_byte = 0
@@ -86,13 +87,15 @@ def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
 
             if line.startswith("1."):
                 try:
-                    documents = create_documents(game_id, game_string, num_skip)
+                    documents_for_game = create_documents(game_id, game_string, num_skip)
 
-                    if len(documents):
-                        solr_instance.add(documents)
+                    if len(documents_for_game):
+                        documents.extend(documents_for_game)
                         game_id += 1
 
                         if game_id % commit_interval == 0:
+                            solr_instance.add(documents)
+                            documents = []
                             solr_instance.commit()
                             in_progress[filename] = file.tell()
                             update_progress_json(in_progress)

@@ -68,19 +68,37 @@
 
     % TODO full document format example include here
 
-    This section explains the complete document format as well as provides an example of a single document containing all the board encodings as well as the game to which the board belongs. We have purposely split up the encodings into several fields instead of a single \"board\_encoding\" field, to allow for modularity. As you will see, it will be easy to turn off / on some of the encodings while querying for results in our user interface.
+    This section explains the complete document format as well as provides an example of a single document containing all the board encodings as well as the game to which the board belongs. We have purposely split up the encodings into several fields instead of a single ``board\_encoding'' field, to allow for modularity. As you will see, it will be easy to toggle some of the encoding methods while querying for results in our user interface.
 
 
     \section{Solr}
 
+    In order to store and retrieve our documents, we used Solr, an application that uses Lucene under the hood. The reason we chose to use Solr instead of Lucene is that it is less difficult to set up, as Lucene is a library whereas Solr works out of the box.
+
     \subsection{BM25}
+
+    The retrieval of our documents were performed with the algorithm Okapi BM25. The reason that we used this algorithm is that this enables ranked retrieval of documents, mainly because it allows boards to be retrieved in decreasing order of similarity. For this we used the parameters $k1 = 2.0$ and $b = 0.75$.
+
+    % TODO   Bag-of-words retrieval function => disregarding grammar and (word order!)
+
+    % TODO explain inverse document frequency
+
+    There may be alternatives to the BM25 algorithm for our document retrieval which may perform better for this infromation retrieval project. However, the analysis of this part goes beyond the scope of the project.
+
+    % TODO why did we use BM25 and not BM25F for example?
+    % TODO Inverse Document Frequency (IDF) is a weight indicating how commonly a word is used. The more frequent its usage across documents, the lower its score.
+
+    \sections{Evaluation}
 
 
     \section{Results}
 
+
     \section{Evaluation}
 
+
     \section{Indexing Speed}
+
 
     \section{Retrieval Speed}
 

@@ -20,7 +20,7 @@ For more info about closures and encoding we refer to our report.
 """
 
 
-class Metric(enum.Enum):
+class Encoding(enum.Enum):
     """
     An enum containing all closures and their corresponding symbols used for encoding
     """
@@ -34,13 +34,13 @@ class Metric(enum.Enum):
     def from_str(metric_name: str):
 
         if metric_name.lower() == 'reachability':
-            return Metric.Reachability
+            return Encoding.Reachability
         elif metric_name.lower() == 'attack':
-            return Metric.Attack
+            return Encoding.Attack
         elif metric_name.lower() == 'defense':
-            return Metric.Defense
+            return Encoding.Defense
         elif metric_name.lower() == 'rayattack':
-            return Metric.RayAttack
+            return Encoding.RayAttack
 
         raise ValueError('Could not convert string to metric')
 
@@ -175,4 +175,3 @@ def pin_closure(board: chess.Board, square: chess.Square) -> bool:
 
     """
     return board.is_pinned(board.color_at(square), square)
-

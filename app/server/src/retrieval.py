@@ -3,11 +3,10 @@ import typing
 import chess
 import pysolr
 
-import closures
-import encoding
+from app.server.src.encoding import encoding, encoding_methods
 
 
-def retrieve(solr_instance: pysolr.Solr, board: chess.Board, metrics: typing.List[closures.Metric]):
+def retrieve(solr_instance: pysolr.Solr, board: chess.Board, metrics: typing.List[closures.Encoding]):
     """
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards

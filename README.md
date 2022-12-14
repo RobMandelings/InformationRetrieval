@@ -13,3 +13,7 @@ https://solr.apache.org/guide/solr/latest/deployment-guide/solr-in-docker.html
 Pin, Schaak, Schaakmat, Ray Attack (improvement) => document in paper
 
 Retrieving actual game
+
+### Resource
+#### For coords of diagonal of bishop
+https://codereview.stackexchange.com/questions/146935/find-diagonal-positions-for-bishop-movement

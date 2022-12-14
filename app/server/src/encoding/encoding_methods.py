@@ -128,8 +128,9 @@ def defense_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[st
     return closure
 
 
-def diagonals(coord, size):
+def diagonals(coord):
     x, y = coord
+    size = 8
     return list(chain(
         [(x, y)],
         zip(range(x - 1, -1, -1), range(y - 1, -1, -1)),
@@ -157,16 +158,21 @@ def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple
             if board.color_at(square_on_file) not in [piece_color, None]:
                 ray_attacked_pieces.append(board.piece_at(square_on_file).symbol() + chess.square_name(square_on_file))
     if piece_type == chess.BISHOP or piece_type == chess.QUEEN:
-        coords_diagonal = diagonals((rank, file), 8)
-        test = 0
+        coords_diagonal = diagonals((rank, file))
+        for item in coords_diagonal:
+            square_on_diagonal = chess.square(item[1], item[0])
+            if board.color_at(square_on_diagonal) not in [piece_color, None]:
+                ray_attacked_pieces.append(board.piece_at(square_on_diagonal).symbol() + chess.square_name(square_on_diagonal))
     closure = (board.piece_at(square).symbol(), ray_attacked_pieces)
     return closure
 
 
-pgn = open("example_games/game.pgn")
+pgn = open("example_games/game5.pgn")
 game = chess.pgn.read_game(pgn)
 board = game.board()
-ray_closure = ray_attack_closure(board, 2)
+for move in game.mainline_moves():
+    board.push(move)
+ray_closure = ray_attack_closure(board, 38)
 
 
 def pin_closure(board: chess.Board, square: chess.Square) -> bool:

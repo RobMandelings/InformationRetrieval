@@ -45,6 +45,7 @@ def main():
                                      in_progress=in_progress)
                 indexed = True
             except pysolr.SolrError as e:
+                print(e)
                 print("Solr Error has occurred. Restarting.")
                 nr_retries += 1
     pass

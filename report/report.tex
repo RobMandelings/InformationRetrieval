@@ -7,6 +7,17 @@
 % Packages
 \usepackage{amsmath}
 \usepackage[left=20mm, right=20mm]{geometry}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Report},
+    pdfpagemode=FullScreen,
+}
+
 \bibliographystyle{plain}
 
 % Document
@@ -14,20 +25,33 @@
 
     \section{Introduction}
 
-    This section is an introduction ~\cite{SimilarChessPositions}
-
 
     \section{Board Encoding}
 
-    \subsection{Similarities}
+    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration.
+
+    \subsection{Board State}
+
+    The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example can be seen on (placeholder)
 
     \subsubsection{Reachability}
 
+    This encoding converts the board state into a list of reachable squares, for every piece on the board. A reachable square for a piece is considered to be a square where this piece is allowed to move to on its turn. Board positions that have reachabilities similar to the query board position is regarded as a better match.
+
+    Another idea included in the reachability is the distance between the piece and the reachable square. The larger the distance, the smaller the weight that is given to this reachable square (see ~\eqref{eq:distanceMetric} for the specific metric that was used). An example is given on figure (figure).
     % TODO reachability only necessary to be encoded in the board
+
+    \begin{equation}
+        \label{eq:distanceMetric}
+    \end{equation}
 
     \subsubsection{Attack}
 
+    Another encoding is attack, where the board is converted into a sequence of squares with opponents that can be attack by another piece. This encoding is performed for each piece on the board, and concatenated as a single string. You can see an example of this on figure ()
+
     \subsubsection{Defense}
+
+    This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that \'attacks\' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example is given at figure ().
 
     \subsubsection{Ray-Attack}
 
@@ -35,21 +59,49 @@
 
     \subsubsection{Other possibilities}
 
+    We have only implemented a sample of the possible encodings for these board configurations, as there is other useful information that might be encoded from these boards to get even more relevancy.
 
-    \section{Document format}
+    % TODO er zou in principe ook met de parameters kunnen worden gespeeld om sommige encoderingen een groter gewicht / belang te laten hebben dan anderen om de relevancy te verhogen (bijvoorbeeld check of checkmate).
+
+
+    \section{Document format}\label{sec:documentformat}
 
     % TODO full document format example include here
 
+    This section explains the complete document format as well as provides an example of a single document containing all the board encodings as well as the game to which the board belongs. We have purposely split up the encodings into several fields instead of a single \"board\_encoding\" field, to allow for modularity. As you will see, it will be easy to turn off / on some of the encodings while querying for results in our user interface.
+
+
     \section{Solr}
 
-    \subsection{BK25}
+    \subsection{BM25}
+
 
     \section{Results}
 
+    \section{Evaluation}
+
+    \section{Indexing Speed}
+
+    \section{Retrieval Speed}
+
+
+    \section{Relevancy}
+
+    % TODO can be hard to evaluate the relevance, if we would elaborate on this project even more, we would have users judge the relevance of chess board retrievals
+
     % TODO if there are boards that are exactly the same as the query, these should be retrieved and visible at the top (one evaluation)
 
-    % TODO can be hard to evaluate the relevance, if we would elaborate on this project even more, we would have users judge the relevance of chess board retrievals 
+
+    \section{User Interface}
+
+    For demonstration purposes and ease of evaluation, we have created a user interface to run the queries and retrieve the results. A board configuration can be loaded by using an FEN configuration, either entering one manually or selecting a preset from the list. You can also turn on or off certain similarity encodings as you like, which is possible due to the usage of fields (section ~\ref{sec:documentformat}). After you have constructed the query (board configuration) and selected the desired encodings to be assist in the query, you can click on the search button to retrieve the results.
+
+    After the query is performed, you will get a list of games sorted on relevancy, with the most relevant game at the top. You will also noticed that one board is highlighted that means this board configuration had the highest matching score and thus resulted in the retrieval of the corresponding game. All other boards of the game are also retrieved to see which moves led to the highlighted board configuration or what moves come next.
+
+    As a side-note, a working demo of our project can be found at \href{http://chess.minetronic.com}{chess.minetronic.com}.
 
     \bibliography{refs}
+
+    % TODO possible question for the presentation: why encode the board in the current way instead of FEN?
 
 \end{document}

@@ -62,7 +62,7 @@ def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
     :commit_interval: amount of games between commits (in case many games are indexed at once)
     """
 
-    game_id = solr_instance.search('game_id:*').raw_response['response']['numFound']
+    game_id = solr_instance.search('*:*').raw_response['response']['numFound']
 
     for filename in filenames:
 
@@ -108,8 +108,6 @@ def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
 
             pbar.update((sys.getsizeof(line) - sys.getsizeof('\n')) / 1000_000)
             line = file.readline()
-
-
 
         if filename in in_progress:
             del in_progress[f"{filename}"]

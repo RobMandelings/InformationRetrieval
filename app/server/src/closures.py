@@ -139,5 +139,6 @@ def pin_closure(board: chess.Board, square: chess.Square) -> bool:
     Computes the pin closure of a piece on the given board
 
     """
+
     return board.is_pinned(board.color_at(square), square)
 

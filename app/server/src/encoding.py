@@ -63,8 +63,10 @@ def encode_board(board: chess.Board,
 
     if Metric.Reachability in metrics:
         reachability_encodings = list()
+        legal_moves_list = list(board.legal_moves)
         for (piece, square) in piece_squares:
-            encoding = encode_closure(closures.reachability_closure(board, square), Metric.Reachability)
+            encoding = encode_closure(closures.reachability_closure(board, square, legal_moves_list),
+                                      Metric.Reachability)
             if encoding:
                 reachability_encodings.append(encoding)
         metric_encodings[Metric.Reachability] = " ".join(reachability_encodings)

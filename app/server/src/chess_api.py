@@ -4,7 +4,8 @@ from flask import request
 from flask_restful import Resource
 
 import closures
-from indexing import retrieve
+import solr_util
+from retrieval import retrieve
 
 
 class SearchResource(Resource):
@@ -18,5 +19,5 @@ class SearchResource(Resource):
 
         board = chess.Board(fen)
         metrics = list(map(lambda str_metric: closures.Metric.from_str(str_metric), str_metrics))
-        results = retrieve(board, metrics)
+        results = retrieve(solr_util.get_solr_instance(), board, metrics)
         return {'results': results}

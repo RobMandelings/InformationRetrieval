@@ -63,7 +63,7 @@ export default {
   },
   mounted() {
     // TODO might not be necessary anymore
-    this.selectedMoveNr = this.documentData.move_nr;
+    this.initializeBoard();
   },
   watch: {
     documentData() {
@@ -93,6 +93,7 @@ export default {
   },
   methods: {
     initializeBoard() {
+      this.selectedMoveNr = this.documentData.move_nr;
     },
     boardClicked(move_nr) {
       this.selectedMoveNr = move_nr;

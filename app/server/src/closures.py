@@ -141,9 +141,3 @@ def pin_closure(board: chess.Board, square: chess.Square) -> bool:
     """
     return board.is_pinned(board.color_at(square), square)
 
-# pgn = open("example_games/game5.pgn")
-# game = chess.pgn.read_game(pgn)
-# board = game.board()
-# for move in game.mainline_moves():
-#     board.push(move)
-# x = 0

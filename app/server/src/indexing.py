@@ -7,8 +7,7 @@ import chess.pgn
 import pysolr
 from tqdm.auto import tqdm
 
-import closures
-import encoding
+from app.server.src.encoding import encoding, encoding_methods
 
 
 class MovePushException(Exception):
@@ -22,7 +21,7 @@ def create_documents(game_id, game_string, num_skip):
 
     for (move_nr, move) in enumerate(game.mainline_moves()):
         if move_nr > num_skip:
-            board_encoding = encoding.encode_board(board, list(closures.Metric.__members__.values()))
+            board_encoding = encoding.encode_board(board, list(closures.Encoding.__members__.values()))
 
             documents.append({
                 "id": int(f"{game_id}{move_nr}"),
@@ -30,9 +29,9 @@ def create_documents(game_id, game_string, num_skip):
                 "game_id": game_id,
                 "move_nr": move_nr,
                 "board": board_encoding['board'],
-                "reachability": board_encoding['metrics'][closures.Metric.Reachability],
-                "attack": board_encoding['metrics'][closures.Metric.Attack],
-                "defense": board_encoding['metrics'][closures.Metric.Defense],
+                "reachability": board_encoding['metrics'][closures.Encoding.Reachability],
+                "attack": board_encoding['metrics'][closures.Encoding.Attack],
+                "defense": board_encoding['metrics'][closures.Encoding.Defense],
             })
 
         try:

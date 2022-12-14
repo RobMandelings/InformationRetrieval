@@ -2,8 +2,8 @@ import typing
 
 import chess.pgn
 
-import closures
-from closures import Metric
+import encoding_methods
+from encoding_methods import Encoding
 
 """
 This file contains the encoding functions.
@@ -12,7 +12,7 @@ These functions are used as helper functions for the implementation of the index
 """
 
 
-def encode_closure(closure, closure_type: Metric):
+def encode_closure(closure, closure_type: Encoding):
     """
     Encodes a closure based on which closure type to the correct format
 
@@ -21,11 +21,11 @@ def encode_closure(closure, closure_type: Metric):
     :param closure_type: the type of closure to ensure right formatting
     :return: string of encoded closure
     """
-    if closure_type is Metric.Reachability:
+    if closure_type is Encoding.Reachability:
         # typing.Dict[str, float]
         closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
         return " ".join(closure_encodings)
-    elif closure_type in {Metric.Attack, Metric.Defense}:
+    elif closure_type in {Encoding.Attack, Encoding.Defense}:
         closure_encodings = []
         for (item_nr, item) in enumerate(closure[1]):
             closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")
@@ -42,7 +42,7 @@ def encode_piece_at(piece, square):
 
 
 def encode_board(board: chess.Board,
-                 metrics: typing.List[Metric]) -> typing.Dict[str, str]:
+                 metrics: typing.List[Encoding]) -> typing.Dict[str, str]:
     """
     Encodes a board to the right format (with the given closures)
 
@@ -61,33 +61,33 @@ def encode_board(board: chess.Board,
     for (piece, square) in piece_squares:
         base_board_list.append(encode_piece_at(piece, square))
 
-    if Metric.Reachability in metrics:
+    if Encoding.Reachability in metrics:
         reachability_encodings = list()
         legal_moves_list = list(board.legal_moves)
         for (piece, square) in piece_squares:
             encoding = encode_closure(closures.reachability_closure(board, square, legal_moves_list),
-                                      Metric.Reachability)
+                                      Encoding.Reachability)
             if encoding:
                 reachability_encodings.append(encoding)
-        metric_encodings[Metric.Reachability] = " ".join(reachability_encodings)
+        metric_encodings[Encoding.Reachability] = " ".join(reachability_encodings)
 
-    if Metric.Attack in metrics:
+    if Encoding.Attack in metrics:
         attack_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(closures.attack_closure(board, square), Metric.Attack)
+            encoding = encode_closure(closures.attack_closure(board, square), Encoding.Attack)
             if encoding:
                 attack_encodings.append(encoding)
-        metric_encodings[Metric.Attack] = " ".join(attack_encodings)
+        metric_encodings[Encoding.Attack] = " ".join(attack_encodings)
 
-    if Metric.Defense in metrics:
+    if Encoding.Defense in metrics:
         defense_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(closures.defense_closure(board, square), Metric.Defense)
+            encoding = encode_closure(closures.defense_closure(board, square), Encoding.Defense)
             if encoding:
                 defense_encodings.append(encoding)
-        metric_encodings[Metric.Defense] = " ".join(defense_encodings)
+        metric_encodings[Encoding.Defense] = " ".join(defense_encodings)
 
-    if Metric.RayAttack in metrics:
+    if Encoding.RayAttack in metrics:
         pass
         # TODO
         # ray_attack_encodings = list()

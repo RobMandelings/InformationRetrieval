@@ -3,7 +3,7 @@ import chess.pgn
 from flask import request
 from flask_restful import Resource
 
-import closures
+from app.server.src.encoding import encoding_methods
 import solr_util
 from retrieval import retrieve
 
@@ -18,6 +18,6 @@ class SearchResource(Resource):
         """
 
         board = chess.Board(fen)
-        metrics = list(map(lambda str_metric: closures.Metric.from_str(str_metric), str_metrics))
+        metrics = list(map(lambda str_metric: closures.Encoding.from_str(str_metric), str_metrics))
         results = retrieve(solr_util.get_solr_instance(), board, metrics)
         return {'results': results}

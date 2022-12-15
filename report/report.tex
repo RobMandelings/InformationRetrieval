@@ -28,13 +28,13 @@
 
     \section{Problem Definition}
 
-    Chess is a very popular board game between two players, where each player has a corresponding color. When the game starts, each player starts with an equal number of pieces, with each piece of a certain type. Every type of piece has different rules that govern which locations it may move to. If a reachable square is already occupied by a piece of the opposite side, this piece is allowed to move to that square. In this case, the piece of the opponnend gets removed from the board. The goal is to place the king of the opponent into a checkmate position, i.e.\ the king is under immediate attack and cannot move to a position where it will not be attacked.
+    Chess is a very popular board game between two players, where each player has a corresponding color. When the game starts, each player starts with an equal number of pieces, with each piece of a certain type. Every type of piece has different rules that govern which locations it may move to. If a reachable square is already occupied by a piece of the opposite side, this piece is allowed to move to that square. In this case, the piece of the opponent gets removed from the board. The goal is to place the king of the opponent into a checkmate position, i.e.\ the king is under immediate attack and cannot move to a position where it will not be attacked.
 
     At each step, a player has the option to move a single piece on the board, possibly removing a piece of the opposite color.
 
     As there are many ways in which to play game, people might wonder what might be a good move, given a particular board configuration. Therefore, it might be useful to look at similar board configurations for games that have been played in history in order to see what other people did in a similar setting as well as how the game ended. This makes it easier to perform analysis on board configurations and decide what is a good tactic or not.s
 
-    After the introduction and motivation for the project, we will now formulate our problem statement. The goal is to retrieve a list of games (documents) sorted in decreasing order of similarity, based on a board configuration (the query).
+    After the introduction and motivation for the project, we will now formulate our problem statement. The goal is to retrieve a relevant list of games (documents) which is sorted in a certain decreasing order. This order would be based on the similarity of a given board configuration (the query) and the board configurations in the games. So the more similar a board configuration inside a game to the given query, the higher this game would come up in the list.
 
     % TODO numskip
     % TODO complete games filtering

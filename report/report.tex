@@ -26,6 +26,17 @@
     \section{Introduction}
 
 
+    \section{Problem Definition}
+
+    Chess is a very popular board game between two players, where each player has a corresponding color. When the game starts, each player starts with an equal number of pieces, with each piece of a certain type. Every type of piece has different rules that govern which locations it may move to. If a reachable square is already occupied by a piece of the opposite side, this piece is allowed to move to that square. In this case, the piece of the opponnend gets removed from the board. The goal is to place the king of the opponent into a checkmate position, i.e.\ the king is under immediate attack and cannot move to a position where it will not be attacked.
+
+    At each step, a player has the option to move a single piece on the board, possibly removing a piece of the opposite color.
+
+    As there are many ways in which to play game, people might wonder what might be a good move, given a particular board configuration. Therefore, it might be useful to look at similar board configurations for games that have been played in history in order to see what other people did in a similar setting as well as how the game ended. This makes it easier to perform analysis on board configurations and decide what is a good tactic or not.s
+
+    After the introduction and motivation for the project, we will now formulate our problem statement. The goal is to retrieve a list of games (documents) sorted in decreasing order of similarity, based on a board configuration (the query).
+
+
     \section{Board Encoding}
 
     In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration.
@@ -55,7 +66,11 @@
 
     \subsubsection{Ray-Attack}
 
-    \subsubsection{Pinning}
+    Ray-Attack is a more generalized form of the Attack encoding, where not only direct attack squares are considered, but also the attack squares that go through other pieces. Boards that have similar ray-attacks can be considered more similar than those who do not, as the ray-attacked pieces may become vulnerable if one of the directly attacked pieces move.
+
+    \subsubsection{Check}
+
+    A simple, yet powerful encoding we have implemented is Check. In case the board is in the check state, the pieces that attack the king are encoded. It is apparent to see that boards in a similar check state should be much more relevant to each other than other boards, mainly because being checked limits the moves that you can make.
 
     \subsubsection{Other possibilities}
 
@@ -70,6 +85,8 @@
 
     This section explains the complete document format as well as provides an example of a single document containing all the board encodings as well as the game to which the board belongs. We have purposely split up the encodings into several fields instead of a single ``board\_encoding'' field, to allow for modularity. As you will see, it will be easy to toggle some of the encoding methods while querying for results in our user interface.
 
+    Each of the encoding methods explained before encode the pieces in similarly. A single piece along its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The only difference is that the reachability encoding also includes a weight for each piece.
+
 
     \section{Solr}
 
@@ -77,13 +94,12 @@
 
     \subsection{BM25}
 
-    The retrieval of our documents were performed with the algorithm Okapi BM25. The reason that we used this algorithm is that this enables ranked retrieval of documents, mainly because it allows boards to be retrieved in decreasing order of similarity. For this we used the parameters $k1 = 2.0$ and $b = 0.75$.
-
-    % TODO   Bag-of-words retrieval function => disregarding grammar and (word order!)
+    The retrieval of our documents were performed with the algorithm Okapi BM25. The reason that we used this algorithm is that this enables ranked retrieval of documents, mainly because it allows boards to be retrieved in decreasing order of similarity. For this we used the parameters $k1 = 2.0$ and $b = 0.75$. Another key property of this algorithm is that it uses a bag-of-words function, for which the grammar and word order is disregarded. This makes sense, as the position of the pieces is already included in the encodings, therefore matching a piece at a position can be done regardless of the order.
 
     % TODO explain inverse document frequency
 
-    There may be alternatives to the BM25 algorithm for our document retrieval which may perform better for this infromation retrieval project. However, the analysis of this part goes beyond the scope of the project.
+    There may be alternatives to the BM25 algorithm for our document retrieval which may perform better for this information retrieval project. However, the analysis of this part goes beyond the scope of the project.
+
 
     % TODO why did we use BM25 and not BM25F for example?
     % TODO Inverse Document Frequency (IDF) is a weight indicating how commonly a word is used. The more frequent its usage across documents, the lower its score.

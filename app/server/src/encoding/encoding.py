@@ -55,7 +55,7 @@ def encode_board(board: chess.Board,
     piece_squares = list(filter(lambda piece_square: bool(piece_square[0]), piece_squares))
 
     for (piece, square) in piece_squares:
-        base_board_list.append(encode_piece_at(piece, square))
+        base_board_list.append(encoding_methods.encode_piece_at(piece, square))
 
     if Encoding.Reachability in metrics:
         reachability_encodings = list()

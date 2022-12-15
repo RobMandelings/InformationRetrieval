@@ -1,9 +1,7 @@
 import typing
 
 import chess.pgn
-
-import encoding_methods
-from encoding_methods import Encoding
+import encoding.encoding_methods as encoding_methods
 
 """
 This file contains the encoding functions.
@@ -12,7 +10,7 @@ These functions are used as helper functions for the implementation of the index
 """
 
 
-def encode_closure(closure, closure_type: Encoding):
+def encode_closure(closure, closure_type: encoding_methods.EncodingMethod):
     """
     Encodes a closure based on which closure type to the correct format
 
@@ -21,24 +19,25 @@ def encode_closure(closure, closure_type: Encoding):
     :param closure_type: the type of closure to ensure right formatting
     :return: string of encoded closure
     """
-    if closure_type is Encoding.Reachability:
+    if closure_type is encoding_methods.EncodingMethod.Reachability:
         # typing.Dict[str, float]
         closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
         return " ".join(closure_encodings)
-    elif closure_type in {Encoding.Attack, Encoding.Defense, Encoding.RayAttack}:
+    elif closure_type in {encoding_methods.EncodingMethod.Attack, encoding_methods.EncodingMethod.Defense,
+                          encoding_methods.EncodingMethod.RayAttack}:
         closure_encodings = []
         for (item_nr, item) in enumerate(closure[1]):
             closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")
         return " ".join(closure_encodings)
-    elif closure_type is Encoding.Check:
+    elif closure_type is encoding_methods.EncodingMethod.Check:
         closure_encoding = None
         if closure[0]:
-            closure_encodings = closure[1]
+            closure_encoding = closure[1]
         return closure_encoding
 
 
 def encode_board(board: chess.Board,
-                 metrics: typing.List[Encoding]) -> typing.Dict[str, str]:
+                 metrics: typing.List[encoding_methods.EncodingMethod]) -> typing.Dict[encoding_methods.EncodingMethod, str]:
     """
     Encodes a board to the right format (with the given closures)
 
@@ -48,8 +47,8 @@ def encode_board(board: chess.Board,
     :return: Full encoding of the board which is used in the indexing algorithm
     """
 
+    board_encoding = {}
     base_board_list = list()
-    metric_encodings = dict()
 
     piece_squares = list(map(lambda square: (board.piece_at(square), square), chess.SQUARES))
     piece_squares = list(filter(lambda piece_square: bool(piece_square[0]), piece_squares))
@@ -57,49 +56,49 @@ def encode_board(board: chess.Board,
     for (piece, square) in piece_squares:
         base_board_list.append(encoding_methods.encode_piece_at(piece, square))
 
-    if Encoding.Reachability in metrics:
+    if encoding_methods.EncodingMethod.Reachability in metrics:
         reachability_encodings = list()
         legal_moves_list = list(board.legal_moves)
         for (piece, square) in piece_squares:
             encoding = encode_closure(encoding_methods.reachability_closure(board, square, legal_moves_list),
-                                      Encoding.Reachability)
+                                      encoding_methods.EncodingMethod.Reachability)
             if encoding:
                 reachability_encodings.append(encoding)
-        metric_encodings[Encoding.Reachability] = " ".join(reachability_encodings)
+        board_encoding[encoding_methods.EncodingMethod.Reachability] = " ".join(reachability_encodings)
 
-    if Encoding.Attack in metrics:
+    if encoding_methods.EncodingMethod.Attack in metrics:
         attack_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.attack_closure(board, square), Encoding.Attack)
+            encoding = encode_closure(encoding_methods.attack_closure(board, square), encoding_methods.EncodingMethod.Attack)
             if encoding:
                 attack_encodings.append(encoding)
-        metric_encodings[Encoding.Attack] = " ".join(attack_encodings)
+        board_encoding[encoding_methods.EncodingMethod.Attack] = " ".join(attack_encodings)
 
-    if Encoding.Defense in metrics:
+    if encoding_methods.EncodingMethod.Defense in metrics:
         defense_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.defense_closure(board, square), Encoding.Defense)
+            encoding = encode_closure(encoding_methods.defense_closure(board, square),
+                                      encoding_methods.EncodingMethod.Defense)
             if encoding:
                 defense_encodings.append(encoding)
-        metric_encodings[Encoding.Defense] = " ".join(defense_encodings)
+        board_encoding[encoding_methods.EncodingMethod.Defense] = " ".join(defense_encodings)
 
-    if Encoding.RayAttack in metrics:
+    if encoding_methods.EncodingMethod.RayAttack in metrics:
         ray_attack_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.ray_attack_closure(board, square), Encoding.RayAttack)
+            encoding = encode_closure(encoding_methods.ray_attack_closure(board, square),
+                                      encoding_methods.EncodingMethod.RayAttack)
             if encoding:
                 ray_attack_encodings.append(encoding)
-        metric_encodings[Encoding.RayAttack] = " ".join(ray_attack_encodings)
+        board_encoding[encoding_methods.EncodingMethod.RayAttack] = " ".join(ray_attack_encodings)
 
-    if Encoding.Check in metrics:
+    if encoding_methods.EncodingMethod.Check in metrics:
         check_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.check(board, square), Encoding.Check)
+            encoding = encode_closure(encoding_methods.check(board, square), encoding_methods.EncodingMethod.Check)
             if encoding:
                 check_encodings.append(encoding)
-        metric_encodings[Encoding.Check] = " ".join(check_encodings)
+        board_encoding[encoding_methods.EncodingMethod.Check] = " ".join(check_encodings)
 
-    return {
-        'board': " ".join(base_board_list),
-        'metrics': metric_encodings
-    }
+    board_encoding[encoding_methods.EncodingMethod.Board] = " ".join(base_board_list)
+    return board_encoding

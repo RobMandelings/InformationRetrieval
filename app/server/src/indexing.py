@@ -7,7 +7,7 @@ import chess.pgn
 import pysolr
 from tqdm.auto import tqdm
 
-from app.server.src.encoding import encoding, encoding_methods
+from encoding import encoding, encoding_methods
 
 
 class MovePushException(Exception):
@@ -21,19 +21,20 @@ def create_documents(game_id, game_string, num_skip):
 
     for (move_nr, move) in enumerate(game.mainline_moves()):
         if move_nr > num_skip:
-            board_encoding = encoding.encode_board(board, list(closures.Encoding.__members__.values()))
+            board_encoding = encoding.encode_board(board, list(encoding_methods.EncodingMethod.__members__.values()))
 
             documents.append({
                 "id": int(f"{game_id}{move_nr}"),
                 "game": game_string,
                 "game_id": game_id,
                 "move_nr": move_nr,
-                "board": board_encoding['board'],
-                "reachability": board_encoding['metrics'][closures.Encoding.Reachability],
-                "attack": board_encoding['metrics'][closures.Encoding.Attack],
-                "defense": board_encoding['metrics'][closures.Encoding.Defense],
+                "board": board_encoding[encoding_methods.EncodingMethod.Board],
+                "reachability": board_encoding[encoding_methods.EncodingMethod.Reachability],
+                "attack": board_encoding[encoding_methods.EncodingMethod.Attack],
+                "defense": board_encoding[encoding_methods.EncodingMethod.Defense],
+                "ray_attack": board_encoding[encoding_methods.EncodingMethod.RayAttack],
+                "check": board_encoding[encoding_methods.EncodingMethod.Check],
             })
-
         try:
             board.push(move)
         except Exception as e:

@@ -3,10 +3,10 @@ import typing
 import chess
 import pysolr
 
-from app.server.src.encoding import encoding, encoding_methods
+from encoding import encoding, encoding_methods
 
 
-def retrieve(solr_instance: pysolr.Solr, board: chess.Board, metrics: typing.List[closures.Encoding]):
+def retrieve(solr_instance: pysolr.Solr, board: chess.Board, metrics: typing.List[encoding_methods.EncodingMethod]):
     """
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
@@ -14,9 +14,13 @@ def retrieve(solr_instance: pysolr.Solr, board: chess.Board, metrics: typing.Lis
     board_encoding = encoding.encode_board(board, metrics)
 
     query = f'board:({board_encoding["board"]}) '
-    for metric, enc in board_encoding['metrics'].items():
+    for encodingMethod, enc in board_encoding.items():
         if enc:
-            query += f'{metric.name.lower()}:({enc}) '
+            if encodingMethod != encoding_methods.EncodingMethod.Check:
+                query += f'{encodingMethod.name.lower()}:({enc})'
+            else:
+                # Better if boosts are not hardcoded
+                query += f'({encodingMethod.name.lower()}:({enc}))^{10}'
 
     result = solr_instance.search(
         query,

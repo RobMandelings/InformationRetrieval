@@ -30,6 +30,11 @@ def encode_closure(closure, closure_type: Encoding):
         for (item_nr, item) in enumerate(closure[1]):
             closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")
         return " ".join(closure_encodings)
+    elif closure_type is Encoding.Check:
+        closure_encoding = None
+        if closure[0]:
+            closure_encodings = closure[1]
+        return closure_encoding
 
 
 def encode_piece_at(piece, square):
@@ -65,7 +70,7 @@ def encode_board(board: chess.Board,
         reachability_encodings = list()
         legal_moves_list = list(board.legal_moves)
         for (piece, square) in piece_squares:
-            encoding = encode_closure(closures.reachability_closure(board, square, legal_moves_list),
+            encoding = encode_closure(encoding_methods.reachability_closure(board, square, legal_moves_list),
                                       Encoding.Reachability)
             if encoding:
                 reachability_encodings.append(encoding)
@@ -74,7 +79,7 @@ def encode_board(board: chess.Board,
     if Encoding.Attack in metrics:
         attack_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(closures.attack_closure(board, square), Encoding.Attack)
+            encoding = encode_closure(encoding_methods.attack_closure(board, square), Encoding.Attack)
             if encoding:
                 attack_encodings.append(encoding)
         metric_encodings[Encoding.Attack] = " ".join(attack_encodings)
@@ -82,21 +87,26 @@ def encode_board(board: chess.Board,
     if Encoding.Defense in metrics:
         defense_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(closures.defense_closure(board, square), Encoding.Defense)
+            encoding = encode_closure(encoding_methods.defense_closure(board, square), Encoding.Defense)
             if encoding:
                 defense_encodings.append(encoding)
         metric_encodings[Encoding.Defense] = " ".join(defense_encodings)
 
     if Encoding.RayAttack in metrics:
-        pass
-        # TODO
-        # ray_attack_encodings = list()
-        # for square in chess.SQUARES:
-        #     piece = board.piece_at(square)
-        #     if piece:
-        #         r_closure_enc = encode_closure(closures.ray_attack_closure(board, square), Metric.RayAttack)
-        #         ray_attack_encodings.append(r_closure_enc)
-        # metrics[Metric.RayAttack] = " ".join(ray_attack_encodings)
+        ray_attack_encodings = list()
+        for (piece, square) in piece_squares:
+            encoding = encode_closure(encoding_methods.ray_attack_closure(board, square), Encoding.RayAttack)
+            if encoding:
+                ray_attack_encodings.append(encoding)
+        metric_encodings[Encoding.RayAttack] = " ".join(ray_attack_encodings)
+
+    if Encoding.Check in metrics:
+        check_encodings = list()
+        for (piece, square) in piece_squares:
+            encoding = encode_closure(encoding_methods.check_closure(board, square), Encoding.Check)
+            if encoding:
+                check_encodings.append(encoding)
+        metric_encodings[Encoding.Check] = " ".join(check_encodings)
 
     return {
         'board': " ".join(base_board_list),

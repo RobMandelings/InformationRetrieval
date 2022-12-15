@@ -28,7 +28,7 @@ class Encoding(enum.Enum):
     Attack = '>'
     Defense = '<'
     RayAttack = '='
-    Pin = ''
+    Check = ''
 
     @staticmethod
     def from_str(metric_name: str):
@@ -129,6 +129,9 @@ def defense_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[st
 
 
 def diagonals(coord):
+    """
+    https://codereview.stackexchange.com/questions/146935/find-diagonal-positions-for-bishop-movement
+    """
     x, y = coord
     size = 8
     return list(chain(
@@ -167,17 +170,25 @@ def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple
     return closure
 
 
+def check_closure(board: chess.Board, square: chess.Square) -> (bool, chess.Square):
+    """
+    Computes the pin closure of a piece on the given board
+
+    """
+    attacks_king = False
+    attacked_squares = board.attacks(square)
+    closure = None
+    for attacked_square in attacked_squares:
+        if board.piece_type_at(attacked_square) == chess.KING:
+            attacks_king = True
+            closure = board.piece_at(square).symbol() + chess.square_name(square)
+
+    return attacks_king, closure
+
+
 pgn = open("example_games/game5.pgn")
 game = chess.pgn.read_game(pgn)
 board = game.board()
 for move in game.mainline_moves():
     board.push(move)
-ray_closure = ray_attack_closure(board, 38)
-
-
-def pin_closure(board: chess.Board, square: chess.Square) -> bool:
-    """
-    Computes the pin closure of a piece on the given board
-
-    """
-    return board.is_pinned(board.color_at(square), square)
+ray_closure = ray_attack_closure(board, 33)

@@ -22,7 +22,7 @@ For more info about closures and encoding we refer to our report.
 
 class Encoding(enum.Enum):
     """
-    An enum containing all closures and their corresponding symbols used for encoding
+    An enum containing all encoding methods (i.e. closures, check) and their corresponding symbols used for further encoding
     """
     Reachability = '|'
     Attack = '>'
@@ -130,7 +130,13 @@ def defense_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[st
 
 def diagonals(coord):
     """
-    https://codereview.stackexchange.com/questions/146935/find-diagonal-positions-for-bishop-movement
+    Helper function returning all the coordinates of the squares on the same diagonal as the square on the given
+    coordinates: coord.
+
+    This way of calculating these coordinates was taken from the following stackexchange link:
+    https://codereview.stackexchange.com/a/146961
+
+    We used this to simplify our code.
     """
     x, y = coord
     size = 8
@@ -145,7 +151,20 @@ def diagonals(coord):
 
 def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[str, typing.List[str]]:
     """
-    Compute the attack closure of a piece on the given board
+    Computes the ray attack closure of piece p on square (x,y) with a given board:
+
+        x-closure(p,x,y)
+
+    This closure contains all pieces (p') at squares (x',y') that can be 'ray attacked' by p on (x,y)
+    A ray attack is a wider way to look at attack.  It not only occurs when a piece is directly attacking another piece,
+    but also when it is attacking through other pieces in its way.
+
+    It is important to notice that square (x,y) of p is not included in the computed closure, each
+    item in the closure represents a tuple: (p,p',x',y')
+
+    :parameter: board: board on which defense closure is calculated
+    :parameter: square: square of which ray attack closure is calculated
+    :return: closure: ray attack closure in a tuple containing the proper representations for further encoding
     """
     piece_type = board.piece_type_at(square)
     piece_color = board.color_at(square)
@@ -170,25 +189,30 @@ def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple
     return closure
 
 
-def check_closure(board: chess.Board, square: chess.Square) -> (bool, chess.Square):
+def check(board: chess.Board, square: chess.Square) -> (bool, chess.Square):
     """
-    Computes the pin closure of a piece on the given board
+    Determines whether the piece p on square (x,y) is attacking the opponent's king.
 
+    :parameter: board: board on which check is determined
+    :parameter: square: square of which check is determined
+    :return: attacks_king: boolean whether the piece p on square(x,y) is attacking the king
+             representation: if piece p is checking the king, it will give the corresponding representation for further
+             encoding, otherwise it will return None
     """
     attacks_king = False
     attacked_squares = board.attacks(square)
-    closure = None
+    representation = None
     for attacked_square in attacked_squares:
         if board.piece_type_at(attacked_square) == chess.KING:
             attacks_king = True
-            closure = board.piece_at(square).symbol() + chess.square_name(square)
+            representation = board.piece_at(square).symbol() + chess.square_name(square)
 
-    return attacks_king, closure
+    return attacks_king, representation
 
-
-pgn = open("example_games/game5.pgn")
-game = chess.pgn.read_game(pgn)
-board = game.board()
-for move in game.mainline_moves():
-    board.push(move)
-ray_closure = ray_attack_closure(board, 33)
+#
+# pgn = open("example_games/game5.pgn")
+# game = chess.pgn.read_game(pgn)
+# board = game.board()
+# for move in game.mainline_moves():
+#     board.push(move)
+# ray_closure = ray_attack_closure(board, 33)

@@ -37,15 +37,6 @@ def encode_closure(closure, closure_type: Encoding):
         return closure_encoding
 
 
-def encode_piece_at(piece, square):
-    """
-    TODO SEE USAGES IF THIS IS STILL USEFUL
-    """
-    assert piece
-    assert 0 <= square <= chess.SQUARES[-1]
-    return f"{piece.symbol()}{chess.square_name(square)}"
-
-
 def encode_board(board: chess.Board,
                  metrics: typing.List[Encoding]) -> typing.Dict[str, str]:
     """

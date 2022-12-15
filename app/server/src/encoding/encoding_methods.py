@@ -20,15 +20,28 @@ For more info about closures and encoding we refer to our report.
 """
 
 
+def encode_piece_at(piece: chess.Piece, square: chess.Square):
+    """
+    Helper function that encodes a square based on the piece on this square.
+
+    square -> {piece symbol}{square name}
+
+    For example we have a White queen standing on position 2, this will be encoded into Qc1.
+    """
+    assert piece
+    assert 0 <= square <= chess.SQUARES[-1]
+    return f"{piece.symbol()}{chess.square_name(square)}"
+
+
 class Encoding(enum.Enum):
     """
-    An enum containing all closures and their corresponding symbols used for encoding
+    An enum containing all encoding methods (i.e. closures, check) and their corresponding symbols used for further encoding
     """
     Reachability = '|'
     Attack = '>'
     Defense = '<'
     RayAttack = '='
-    Pin = ''
+    Check = ''
 
     @staticmethod
     def from_str(metric_name: str):
@@ -96,7 +109,7 @@ def attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[str
     color = board.color_at(square)
     for attacked_square in attacked_squares:
         if board.piece_at(attacked_square) is not None and color is not board.color_at(attacked_square):
-            attacked_pieces.append(board.piece_at(attacked_square).symbol() + chess.square_name(attacked_square))
+            attacked_pieces.append(encode_piece_at(board.piece_at(attacked_square), attacked_square))
     closure = (board.piece_at(square).symbol(), attacked_pieces)
 
     return closure
@@ -122,13 +135,22 @@ def defense_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[st
     color = board.color_at(square)
     for attacked_square in attacked_squares:
         if board.piece_at(attacked_square) is not None and color is board.color_at(attacked_square):
-            attacked_pieces.append(board.piece_at(attacked_square).symbol() + chess.square_name(attacked_square))
+            attacked_pieces.append(encode_piece_at(board.piece_at(attacked_square), attacked_square))
     closure = (board.piece_at(square).symbol(), attacked_pieces)
 
     return closure
 
 
 def diagonals(coord):
+    """
+    Helper function returning all the coordinates of the squares on the same diagonal as the square on the given
+    coordinates: coord.
+
+    This way of calculating these coordinates was taken from the following stackexchange link:
+    https://codereview.stackexchange.com/a/146961
+
+    We used this to simplify our code.
+    """
     x, y = coord
     size = 8
     return list(chain(
@@ -142,7 +164,20 @@ def diagonals(coord):
 
 def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[str, typing.List[str]]:
     """
-    Compute the attack closure of a piece on the given board
+    Computes the ray attack closure of piece p on square (x,y) with a given board:
+
+        x-closure(p,x,y)
+
+    This closure contains all pieces (p') at squares (x',y') that can be 'ray attacked' by p on (x,y)
+    A ray attack is a wider way to look at attack.  It not only occurs when a piece is directly attacking another piece,
+    but also when it is attacking through other pieces in its way.
+
+    It is important to notice that square (x,y) of p is not included in the computed closure, each
+    item in the closure represents a tuple: (p,p',x',y')
+
+    :parameter: board: board on which defense closure is calculated
+    :parameter: square: square of which ray attack closure is calculated
+    :return: closure: ray attack closure in a tuple containing the proper representations for further encoding
     """
     piece_type = board.piece_type_at(square)
     piece_color = board.color_at(square)
@@ -154,30 +189,43 @@ def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple
             square_on_rank = chess.square(i, rank)
             square_on_file = chess.square(file, i)
             if board.color_at(square_on_rank) not in [piece_color, None]:
-                ray_attacked_pieces.append(board.piece_at(square_on_rank).symbol() + chess.square_name(square_on_rank))
+                ray_attacked_pieces.append(encode_piece_at(board.piece_at(square_on_rank), square_on_rank))
             if board.color_at(square_on_file) not in [piece_color, None]:
-                ray_attacked_pieces.append(board.piece_at(square_on_file).symbol() + chess.square_name(square_on_file))
+                ray_attacked_pieces.append(encode_piece_at(board.piece_at(square_on_file), square_on_file))
     if piece_type == chess.BISHOP or piece_type == chess.QUEEN:
         coords_diagonal = diagonals((rank, file))
         for item in coords_diagonal:
             square_on_diagonal = chess.square(item[1], item[0])
             if board.color_at(square_on_diagonal) not in [piece_color, None]:
-                ray_attacked_pieces.append(board.piece_at(square_on_diagonal).symbol() + chess.square_name(square_on_diagonal))
+                ray_attacked_pieces.append(encode_piece_at(board.piece_at(square_on_diagonal), square_on_diagonal))
     closure = (board.piece_at(square).symbol(), ray_attacked_pieces)
     return closure
 
 
-pgn = open("example_games/game5.pgn")
-game = chess.pgn.read_game(pgn)
-board = game.board()
-for move in game.mainline_moves():
-    board.push(move)
-ray_closure = ray_attack_closure(board, 38)
-
-
-def pin_closure(board: chess.Board, square: chess.Square) -> bool:
+def check(board: chess.Board, square: chess.Square) -> (bool, chess.Square):
     """
-    Computes the pin closure of a piece on the given board
+    Determines whether the piece p on square (x,y) is attacking the opponent's king.
 
+    :parameter: board: board on which check is determined
+    :parameter: square: square of which check is determined
+    :return: attacks_king: boolean whether the piece p on square(x,y) is attacking the king
+             representation: if piece p is checking the king, it will give the corresponding representation for further
+             encoding, otherwise it will return None
     """
-    return board.is_pinned(board.color_at(square), square)
+    attacks_king = False
+    attacked_squares = board.attacks(square)
+    representation = None
+    for attacked_square in attacked_squares:
+        if board.piece_type_at(attacked_square) == chess.KING:
+            attacks_king = True
+            representation = encode_piece_at(board.piece_at(square), square)
+
+    return attacks_king, representation
+
+#
+# pgn = open("example_games/game5.pgn")
+# game = chess.pgn.read_game(pgn)
+# board = game.board()
+# for move in game.mainline_moves():
+#     board.push(move)
+# ray_closure = ray_attack_closure(board, 33)

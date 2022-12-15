@@ -10,7 +10,7 @@ https://solr.apache.org/guide/solr/latest/deployment-guide/solr-in-docker.html
 
 ## TODOs
 
-1. Pinning closure
+1. Check Closure
 2. Documentatie code
 3. Evaluatie
 4.

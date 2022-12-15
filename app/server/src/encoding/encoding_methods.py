@@ -7,13 +7,15 @@ import chess.pgn
 """
 This file contains all the closures possible to use to calculate the similarity between chess boards.
 
-Functions reachability_closure, attack_closure, defense_closure are implemented based on the paper: 
-Retrieval of Similar Chess Positions.
+Functions reachability_closure, attack_closure, defense_closure and ray_attack_closure are implemented based on the 
+paper: Retrieval of Similar Chess Positions.
 
 All the closure implementations return a datastructure containing the right representations for further
 encoding which is eventually used in the documents created by the indexing algorithm.
 
-The Closure enum contains all the closures and their corresponding symbols for the encoding.
+The check is not really a closure, but it returns the right representation as well for further encoding.
+
+The Encoding enum contains all the encodings and their corresponding symbols for the encoding.
 
 The encoding implementation can be found in encoding.py.
 For more info about closures and encoding we refer to our report.

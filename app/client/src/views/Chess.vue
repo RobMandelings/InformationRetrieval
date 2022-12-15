@@ -96,7 +96,6 @@
         <div style="height: 619px">
           <div class="border-2 h-full w-full overflow-auto">
             <div class="space-y-2">
-              <!--            <chess-game-viewer v-if="testDocument" :document-data="testDocument"></chess-game-viewer>-->
               <template v-for="document in retrievedDocuments">
                 <chess-game-viewer :document-data="document"></chess-game-viewer>
               </template>
@@ -109,27 +108,39 @@
       <div class="flex flex-row">
         <v-checkbox
             hide-details
-            v-model="selectedMetrics"
+            v-model="selectedMethods"
+            label="Board"
+            value="Board"
+        ></v-checkbox>
+        <v-checkbox
+            hide-details
+            v-model="selectedMethods"
             label="Reachability"
             value="Reachability"
         ></v-checkbox>
         <v-checkbox
             hide-details
-            v-model="selectedMetrics"
+            v-model="selectedMethods"
             label="Attack"
             value="Attack"
         ></v-checkbox>
         <v-checkbox
             hide-details
-            v-model="selectedMetrics"
+            v-model="selectedMethods"
             label="Defense"
             value="Defense"
         ></v-checkbox>
         <v-checkbox
             hide-details
-            v-model="selectedMetrics"
+            v-model="selectedMethods"
             label="Ray Attack"
             value="RayAttack"
+        ></v-checkbox>
+        <v-checkbox
+            hide-details
+            v-model="selectedMethods"
+            label="Check"
+            value="Check"
         ></v-checkbox>
       </div>
     </div>
@@ -137,7 +148,7 @@
 </template>
 
 <script>
-import {initialState, testGame, encodeState, decodeState} from "@/assets/js/StateLoader.js";
+import {decodeState, encodeState, initialState, testGame} from "@/assets/js/StateLoader.js";
 import {Chess} from 'chess.js';
 import ChessBoard from "@/components/ChessBoard.vue";
 import ChessGameViewer from "@/components/ChessGameViewer.vue";
@@ -154,7 +165,7 @@ export default {
       pgnFile: null,
       fenDialog: false,
       pgnDialog: false,
-      selectedMetrics: [],
+      selectedMethods: [],
       exampleFenStates: [
         'rnbqkbnr/pp2pppp/2p5/8/4p3/2N2Q2/PPPP1PPP/R1B1KBNR',
         'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
@@ -206,7 +217,7 @@ export default {
         const result = await axios(
             {
               method: 'get',
-              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&metrics=${this.selectedMetrics.join(',')}`
+              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&encodingMethods=${this.selectedMethods.join(',')}`
             });
 
         const documents = result.data.results;

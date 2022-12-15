@@ -9,6 +9,7 @@ pylucene-7.7.1-src
 .AppleDouble
 .LSOverride
 *.pdf
+app/server/src/in_progress.json
 
 app/server/game_data/*
 

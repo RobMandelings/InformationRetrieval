@@ -25,7 +25,7 @@ def encode_closure(closure, closure_type: Encoding):
         # typing.Dict[str, float]
         closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
         return " ".join(closure_encodings)
-    elif closure_type in {Encoding.Attack, Encoding.Defense}:
+    elif closure_type in {Encoding.Attack, Encoding.Defense, Encoding.RayAttack}:
         closure_encodings = []
         for (item_nr, item) in enumerate(closure[1]):
             closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")

@@ -1,5 +1,6 @@
 import enum
 import typing
+from itertools import chain
 
 import chess.pgn
 
@@ -127,11 +128,51 @@ def defense_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[st
     return closure
 
 
-def ray_attack_closure(board: chess.Board, piece: chess.Piece) -> typing.Dict[str, float]:
+def diagonals(coord):
+    x, y = coord
+    size = 8
+    return list(chain(
+        [(x, y)],
+        zip(range(x - 1, -1, -1), range(y - 1, -1, -1)),
+        zip(range(x + 1, size, 1), range(y + 1, size, 1)),
+        zip(range(x + 1, size, 1), range(y - 1, -1, -1)),
+        zip(range(x - 1, -1, -1), range(y + 1, size, 1)),
+    ))
+
+
+def ray_attack_closure(board: chess.Board, square: chess.Square) -> typing.Tuple[str, typing.List[str]]:
     """
     Compute the attack closure of a piece on the given board
     """
-    pass
+    piece_type = board.piece_type_at(square)
+    piece_color = board.color_at(square)
+    rank = chess.square_rank(square)
+    file = chess.square_file(square)
+    ray_attacked_pieces = []
+    if piece_type == chess.ROOK or piece_type == chess.QUEEN:
+        for i in range(8):
+            square_on_rank = chess.square(i, rank)
+            square_on_file = chess.square(file, i)
+            if board.color_at(square_on_rank) not in [piece_color, None]:
+                ray_attacked_pieces.append(board.piece_at(square_on_rank).symbol() + chess.square_name(square_on_rank))
+            if board.color_at(square_on_file) not in [piece_color, None]:
+                ray_attacked_pieces.append(board.piece_at(square_on_file).symbol() + chess.square_name(square_on_file))
+    if piece_type == chess.BISHOP or piece_type == chess.QUEEN:
+        coords_diagonal = diagonals((rank, file))
+        for item in coords_diagonal:
+            square_on_diagonal = chess.square(item[1], item[0])
+            if board.color_at(square_on_diagonal) not in [piece_color, None]:
+                ray_attacked_pieces.append(board.piece_at(square_on_diagonal).symbol() + chess.square_name(square_on_diagonal))
+    closure = (board.piece_at(square).symbol(), ray_attacked_pieces)
+    return closure
+
+
+pgn = open("example_games/game5.pgn")
+game = chess.pgn.read_game(pgn)
+board = game.board()
+for move in game.mainline_moves():
+    board.push(move)
+ray_closure = ray_attack_closure(board, 38)
 
 
 def pin_closure(board: chess.Board, square: chess.Square) -> bool:
@@ -139,5 +180,4 @@ def pin_closure(board: chess.Board, square: chess.Square) -> bool:
     Computes the pin closure of a piece on the given board
 
     """
-
     return board.is_pinned(board.color_at(square), square)

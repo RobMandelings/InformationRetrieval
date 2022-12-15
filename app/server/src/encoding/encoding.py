@@ -94,7 +94,7 @@ def encode_board(board: chess.Board,
     if Encoding.Check in metrics:
         check_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.check_closure(board, square), Encoding.Check)
+            encoding = encode_closure(encoding_methods.check(board, square), Encoding.Check)
             if encoding:
                 check_encodings.append(encoding)
         metric_encodings[Encoding.Check] = " ".join(check_encodings)

@@ -10,34 +10,36 @@ These functions are used as helper functions for the implementation of the index
 """
 
 
-def encode_closure(closure, closure_type: encoding_methods.EncodingMethod):
+def chess_encode(data, method: encoding_methods.EncodingMethod):
     """
     Encodes a closure based on which closure type to the correct format
 
     The output of this function is added to the documents in the index
-    :param closure: return value from a closure function
-    :param closure_type: the type of closure to ensure right formatting
+    :param data: data to be encoded
+    :param method: the type of closure to ensure right formatting
     :return: string of encoded closure
     """
-    if closure_type is encoding_methods.EncodingMethod.Reachability:
+    if method is encoding_methods.EncodingMethod.Reachability:
         # typing.Dict[str, float]
-        closure_encodings = map(lambda pair: f"{pair[0]}{closure_type.value}{pair[1]}", list(closure.items()))
+        closure_encodings = map(lambda pair: f"{pair[0]}{method.delimiter}{pair[1]}", list(data.items()))
         return " ".join(closure_encodings)
-    elif closure_type in {encoding_methods.EncodingMethod.Attack, encoding_methods.EncodingMethod.Defense,
-                          encoding_methods.EncodingMethod.RayAttack}:
+    elif method in {encoding_methods.EncodingMethod.Attack, encoding_methods.EncodingMethod.Defense,
+                    encoding_methods.EncodingMethod.RayAttack}:
         closure_encodings = []
-        for (item_nr, item) in enumerate(closure[1]):
-            closure_encodings.append(f"{closure[0]}{closure_type.value}{closure[1][item_nr]}")
+        for (item_nr, item) in enumerate(data[1]):
+            closure_encodings.append(f"{data[0]}{method.delimiter}{data[1][item_nr]}")
         return " ".join(closure_encodings)
-    elif closure_type is encoding_methods.EncodingMethod.Check:
+    elif method is encoding_methods.EncodingMethod.Check:
         closure_encoding = None
-        if closure[0]:
-            closure_encoding = closure[1]
+        if data[0] is not None:
+            color_attacked = "black" if data[0] == chess.BLACK else "white"
+            closure_encoding = f"{color_attacked} {data[1]}"
         return closure_encoding
 
 
 def encode_board(board: chess.Board,
-                 metrics: typing.List[encoding_methods.EncodingMethod]) -> typing.Dict[encoding_methods.EncodingMethod, str]:
+                 metrics: typing.List[encoding_methods.EncodingMethod]) -> typing.Dict[
+    encoding_methods.EncodingMethod, str]:
     """
     Encodes a board to the right format (with the given closures)
 
@@ -60,8 +62,8 @@ def encode_board(board: chess.Board,
         reachability_encodings = list()
         legal_moves_list = list(board.legal_moves)
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.reachability_closure(board, square, legal_moves_list),
-                                      encoding_methods.EncodingMethod.Reachability)
+            encoding = chess_encode(encoding_methods.reachability_closure(board, square, legal_moves_list),
+                                    encoding_methods.EncodingMethod.Reachability)
             if encoding:
                 reachability_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Reachability] = " ".join(reachability_encodings)
@@ -69,7 +71,8 @@ def encode_board(board: chess.Board,
     if encoding_methods.EncodingMethod.Attack in metrics:
         attack_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.attack_closure(board, square), encoding_methods.EncodingMethod.Attack)
+            encoding = chess_encode(encoding_methods.attack_closure(board, square),
+                                    encoding_methods.EncodingMethod.Attack)
             if encoding:
                 attack_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Attack] = " ".join(attack_encodings)
@@ -77,8 +80,8 @@ def encode_board(board: chess.Board,
     if encoding_methods.EncodingMethod.Defense in metrics:
         defense_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.defense_closure(board, square),
-                                      encoding_methods.EncodingMethod.Defense)
+            encoding = chess_encode(encoding_methods.defense_closure(board, square),
+                                    encoding_methods.EncodingMethod.Defense)
             if encoding:
                 defense_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Defense] = " ".join(defense_encodings)
@@ -86,8 +89,8 @@ def encode_board(board: chess.Board,
     if encoding_methods.EncodingMethod.RayAttack in metrics:
         ray_attack_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.ray_attack_closure(board, square),
-                                      encoding_methods.EncodingMethod.RayAttack)
+            encoding = chess_encode(encoding_methods.ray_attack_closure(board, square),
+                                    encoding_methods.EncodingMethod.RayAttack)
             if encoding:
                 ray_attack_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.RayAttack] = " ".join(ray_attack_encodings)
@@ -95,7 +98,7 @@ def encode_board(board: chess.Board,
     if encoding_methods.EncodingMethod.Check in metrics:
         check_encodings = list()
         for (piece, square) in piece_squares:
-            encoding = encode_closure(encoding_methods.check(board, square), encoding_methods.EncodingMethod.Check)
+            encoding = chess_encode(encoding_methods.check(board, square), encoding_methods.EncodingMethod.Check)
             if encoding:
                 check_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Check] = " ".join(check_encodings)

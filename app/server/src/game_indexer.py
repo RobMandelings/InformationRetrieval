@@ -41,7 +41,8 @@ def main():
                 if solr.ping():
                     nr_retries = 0
 
-                indexing.index_games(solr, args.filenames, 24, commit_interval=args.commit_interval,
+                indexing.index_games(solr, args.filenames, 24,
+                                     commit_interval=args.commit_interval,
                                      in_progress=in_progress)
                 indexed = True
             except pysolr.SolrError as e:

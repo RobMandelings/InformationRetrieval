@@ -37,30 +37,24 @@ class EncodingMethod(enum.Enum):
     """
     An enum containing all encoding methods (i.e. closures, check) and their corresponding symbols used for further encoding
     """
-    Board = ''
-    Reachability = '|'
-    Attack = '>'
-    Defense = '<'
-    RayAttack = '='
-    Check = ''
+    Board = ('board', '')
+    Reachability = ('reachability', '|')
+    Attack = ('attack', '>')
+    Defense = ('defense', '<')
+    RayAttack = ('ray_attack', '=')
+    Check = ('check', '')
+
+    def __init__(self, field_name, delimiter):
+        self.field_name = field_name
+        self.delimiter = delimiter
 
     @staticmethod
-    def from_str(metric_name: str):
+    def from_str(name: str):
+        for method in EncodingMethod.__members__.values():
+            if name == method.field_name:
+                return method
 
-        if metric_name.lower() == 'board':
-            return EncodingMethod.Board
-        if metric_name.lower() == 'reachability':
-            return EncodingMethod.Reachability
-        elif metric_name.lower() == 'attack':
-            return EncodingMethod.Attack
-        elif metric_name.lower() == 'defense':
-            return EncodingMethod.Defense
-        elif metric_name.lower() == 'ray_attack':
-            return EncodingMethod.RayAttack
-        elif metric_name.lower() == 'check':
-            return EncodingMethod.Check
-
-        raise ValueError('Could not convert string to metric')
+        raise ValueError(f'Could not convert string {name} to metric')
 
 
 # TODO can be improved: apply mask, nand with moves, ...
@@ -217,21 +211,13 @@ def check(board: chess.Board, square: chess.Square) -> (bool, chess.Square):
              representation: if piece p is checking the king, it will give the corresponding representation for further
              encoding, otherwise it will return None
     """
-    attacks_king = False
     attacked_squares = board.attacks(square)
+    color_attacked = None
     representation = None
     for attacked_square in attacked_squares:
         if board.piece_type_at(attacked_square) == chess.KING and board.color_at(attacked_square) != board.color_at(
                 square):
-            attacks_king = True
+            color_attacked = board.color_at(attacked_square)
             representation = encode_piece_at(board.piece_at(square), square)
 
-    return attacks_king, representation
-
-#
-# pgn = open("example_games/game5.pgn")
-# game = chess.pgn.read_game(pgn)
-# board = game.board()
-# for move in game.mainline_moves():
-#     board.push(move)
-# ray_closure = ray_attack_closure(board, 33)
+    return color_attacked, representation

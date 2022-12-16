@@ -32,8 +32,7 @@ def chess_encode(data, method: encoding_methods.EncodingMethod):
     elif method is encoding_methods.EncodingMethod.Check:
         closure_encoding = None
         if data[0] is not None:
-            color_attacked = "black" if data[0] == chess.BLACK else "white"
-            closure_encoding = f"{color_attacked} {data[1]}"
+            closure_encoding = f"{data[1]}"
         return closure_encoding
 
 
@@ -97,10 +96,18 @@ def encode_board(board: chess.Board,
 
     if encoding_methods.EncodingMethod.Check in metrics:
         check_encodings = list()
+        color_attacked = None
         for (piece, square) in piece_squares:
-            encoding = chess_encode(encoding_methods.check(board, square), encoding_methods.EncodingMethod.Check)
+            check = encoding_methods.check(board, square)
+            if check[0] is not None:
+                color_attacked = check[0]
+            encoding = chess_encode(check, encoding_methods.EncodingMethod.Check)
             if encoding:
                 check_encodings.append(encoding)
+
+        if color_attacked is not None:
+            check_encodings.insert(0, 'black' if color_attacked == chess.BLACK else 'white')
+            
         board_encoding[encoding_methods.EncodingMethod.Check] = " ".join(check_encodings)
 
     board_encoding[encoding_methods.EncodingMethod.Board] = " ".join(base_board_list)

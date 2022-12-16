@@ -7,6 +7,11 @@ import pysolr
 import indexing
 import solr_util
 
+"""
+This file contains the main. ...
+
+"""
+
 
 def main():
     parser = argparse.ArgumentParser()

@@ -32,7 +32,7 @@
 
     At each step, a player has the option to move a single piece on the board, possibly removing a piece of the opposite color.
 
-    As there are many ways in which to play game, people might wonder what might be a good move, given a particular board configuration. Therefore, it might be useful to look at similar board configurations for games that have been played in history in order to see what other people did in a similar setting as well as how the game ended. This makes it easier to perform analysis on board configurations and decide what is a good tactic or not.s
+    As there are many ways in which to play game, people might wonder what might be a good move, given a particular board configuration. Therefore, it might be useful to look at similar board configurations for games that have been played in history in order to see what other people did in a similar setting as well as how the game ended. This makes it easier to perform analysis on board configurations and decide what is a good tactic or not.
 
     After the introduction and motivation for the project, we will now formulate our problem statement. The goal is to retrieve a relevant list of games (documents) which is sorted in a certain decreasing order. This order would be based on the similarity of a given board configuration (the query) and the board configurations in the games. So the more similar a board configuration inside a game to the given query, the higher this game would come up in the list.
 
@@ -43,7 +43,7 @@
 
     \section{Board Encoding}
 
-    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on [reference to similar chess positions paper].
+    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of [reference to similar chess positions paper]. For a more mathematical explaination we refer to [paper] as well.
 
     \subsection{Board State}
 
@@ -51,14 +51,15 @@
 
     \subsection{Reachability}
 
-    This encoding converts the board state into a list of reachable squares, for every piece on the board. A reachable square for a piece is considered to be a square where this piece is allowed to move to on its turn. Board positions that have reachabilities similar to the query board position is regarded as a better match.
+    This encoding converts the board state into a list of reachable squares, for every piece on the board. A reachable square for a piece is considered to be a square where this piece is allowed to move to on its turn according to the rules of the game. Board positions that have reachabilities similar to the query board position is regarded as a better match.
 
-    Another idea included in the reachability is the distance between the piece and the reachable square. The larger the distance, the smaller the weight that is given to this reachable square (see ~\eqref{eq:distanceMetric} for the specific metric that was used). An example is given on figure (figure).
-    % TODO reachability only necessary to be encoded in the board
+    Another idea included in the reachability is the distance between the piece and the reachable square. The larger the distance, the smaller the weight that is given to this reachable square. An example is given on figure (figure).
+    The weight $w$ is computed as follow:\\
 
-    \begin{equation}
-        \label{eq:distanceMetric}
-    \end{equation}
+    $w = 1 - \dfrac{7 * d((x,y),(x',y'))}{64}$ \\
+
+    Here coordinate $(x,y)$ corresponds to the square of a particular piece, and $(x',y')$ to a reachable square. The distance function used is the Chebychev distance.\\
+
 
     \subsection{Attack}
 

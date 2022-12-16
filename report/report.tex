@@ -20,9 +20,6 @@
     pdfpagemode=FullScreen,
 }
 
-id:4186629
-id: 126
-
 \bibliographystyle{plain}
 
 \newcommand{\studentA}{Name: Rob Mandelings\\Student ID: 20193884\\}
@@ -152,8 +149,7 @@ id: 126
 
     We will now consider the attack and defense encodings to evaluate our retrieval system. First we look at the results obtained using only attack similarity, see figure \ref{fig:Attack}.
     Here we see several strong attack similarities between the query board configuration and the top result. For example, the white knight attacks the black bishop on g5, the white rook attacks the black bishop on g5, white knight attacks the black pawn at e5 and the white and black bishops are attacking each other.
-
-    Pawn not defended at b4, bishop is defdedd by rook, king was not defended by the rook
+    Note that in this case defense is disregarded completely, some clear differences between the two boards are that the white pawn on p4, the white bishop on c2 and the white king are not defended in the query board configuration and in the top result they are.
 
     \begin{figure}[H]
         \centering
@@ -162,8 +158,7 @@ id: 126
         \label{fig:Attack}
     \end{figure}
 
-    For defense: rook defense pawn at a2, knight keeps defending c6, knight defends f7
-    Two bishops attack each other in the query board, however in the result board they do not exist anymore. In the previous example, we could see these bishops were preserved. This implies that attack has a
+    Now we will take a look at the results obtained in figure \ref{fig:Defense}, where only defense similarity is used. First of all we see that the similarity in terms of defense is quite strong. Even though the white rook in the a-file has a different position, in both configurations it is defending the white pawn at a2. Also, the black knight at b8 is defending the bishop at c6 and the black knight at g8 is defending the pawn at f6. As a prove that only defense similarity is used and it is properly working, we can also see that the similiraty in terms of attacks is quite bad. For example, two bishops in the query configuration attack each other and in the result configuration they do not exist anymore. We saw in the previous case, where only attack similarity was enabled, that these attacking bishops were preserved in the results.
 
     \begin{figure}[H]
         \centering

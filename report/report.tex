@@ -23,8 +23,15 @@ id: 126
 
 \bibliographystyle{plain}
 
+\newcommand{\studentA}{Name: Rob Mandelings\\Student ID: 20193884\\}
+\newcommand{\studentB}{Name: Jasper De Laet\\Student ID:20192214\\}
+
+\title{Information Retrieval: Chess game retrieval based on board similarity}
+\author{\studentA \\ \studentB}
+
 % Document
 \begin{document}
+    \maketitle
 
     \section{Introduction}
 
@@ -50,7 +57,7 @@ id: 126
 
     \section{Board Encoding}
 
-    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of \cite{SimilarChessPositions}. For a more mathematical explaination we refer to [paper] as well.
+    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of \cite{SimilarChessPositions}. For a more mathematical explaination we refer to this as well.
 
     \subsection{Board State}
 
@@ -155,6 +162,7 @@ id: 126
 
     An improvement that could be added is the rated-based filtering of the retrieval results. This would make the final results more relevant because games with a higher rating give more useful information.
     >>>>>>> a0f1abba800d538f10d6cd09feb600b7adec988a
+
 
 
     \section{Technologies}

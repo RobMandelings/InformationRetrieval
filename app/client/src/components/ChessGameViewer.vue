@@ -83,7 +83,8 @@ export default {
       return this.boards[this.selectedMoveNr];
     },
     selectedBoardFEN() {
-      return encodeState(this.selectedBoard)
+      if (this.selectedBoard) return encodeState(this.selectedBoard)
+      else return ''
     },
     boards() {
       if (this.documentData) return this.documentData.boards;

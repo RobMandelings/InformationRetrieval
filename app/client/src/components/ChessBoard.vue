@@ -35,6 +35,7 @@ export default {
   computed: {},
   methods: {
     getPiece(row, col) {
+      if (!this.state) return null;
       return this.state[`${row},${col}`];
     },
     getBackgroundForPosition(row, column) {

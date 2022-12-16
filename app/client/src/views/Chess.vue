@@ -157,7 +157,7 @@ export default {
         'rn1qk1nr/p2p2pp/Rpb2p2/2p1p1bR/1P2P1P1/3P1N2/P1P2P1P/1NBQKB2',
         // Check
         'r2qkb1r/pp3ppp/1pQ1p1b1/8/2B2n2/3P4/PPP1NPPP/R3K2R',
-          
+
         'rnbqkbnr/pp2pppp/2p5/8/4p3/2N2Q2/PPPP1PPP/R1B1KBNR',
         'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
         '8/pp2k1p1/2p3K1/6p1/3PP3/2P4P/PP4P1/2b5',
@@ -216,7 +216,7 @@ export default {
         const documents = result.data.results;
         documents.forEach(document => {
           const game = new Chess();
-          game.loadPgn(document['game']);
+          game.loadPgn(document['game'], {sloppy: true});
           const history = game.history()
           const newGame = new Chess()
 

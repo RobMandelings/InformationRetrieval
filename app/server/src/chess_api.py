@@ -13,7 +13,11 @@ class SearchResource(Resource):
     def get(self):
         fen = request.args['state']
         str_encodingMethods = request.args['encodingMethods'].split(',')
-        filter_queries = request.args['filterQueries'].split(';')
+        filter_queries = request.args.get('filterQueries')
+        if filter_queries:
+            filter_queries = filter_queries.split(';')
+        else:
+            filter_queries = []
         """
         Handles get requests for IR queries made by the user
         """

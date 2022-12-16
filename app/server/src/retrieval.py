@@ -7,14 +7,19 @@ from encoding import encoding, encoding_methods
 
 
 def get_documents(solr_instance: pysolr.Solr, query, filter_query):
+    kwargs = {
+        "fl": "id,game,score,move_nr,check",
+        "group": "true",
+        "group.field": "game_id"
+    }
+
+    if len(filter_query) > 0:
+        kwargs["fq"] = filter_query,
+
     result = solr_instance.search(
         query,
-        **{
-            "fq": filter_query,
-            "fl": "id,game,score,move_nr",
-            "group": "true",
-            "group.field": "game_id"
-        })
+        **kwargs
+    )
 
     groups = result.grouped['game_id']['groups']
     assert groups, "no results were found"
@@ -43,7 +48,7 @@ def retrieve(solr_instance: pysolr.Solr, board: chess.Board,
 
     documents = []
     if len(filter_queries) == 0:
-        documents.append(get_documents(solr_instance, query, ''))
+        documents.extend(get_documents(solr_instance, query, ''))
     else:
         for filter_query in filter_queries:
             # Only top document for each filter query is kept

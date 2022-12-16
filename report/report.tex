@@ -6,6 +6,8 @@
 
 % Packages
 \usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphicx}
 \usepackage[left=20mm, right=20mm]{geometry}
 \usepackage{hyperref}
 
@@ -141,14 +143,35 @@ id: 126
 
     First we will evaluate the search results based on exact matching. This means that if we query for a board configuration, and this exact board configuration is also present as a document in the index, it should be retrieved as the top result. We have provided a few figures () that demonstrate this functionality.
 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/ExactMatch1-Bo}
+        \caption{Exact matching; Only board similarity enabled.}
+        \label{fig:ExactMatch1-Bo}
+    \end{figure}
+
     We will now consider the attack and defense encodings to evaluate our retrieval system. The first
 
     Knight attacks bishop on g5, rook attacks bishop at g5, knight attack pawn at e5, white bishop attacks bishop at 5g (attach eachother).
     Pawn not defended at b4, bishop is defdedd by rook, king was not defended by the rook
 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/Attack}
+        \caption{Top result for board query. Only attack similarity enabled.}
+        \label{fig:Attack}
+    \end{figure}
+
 
     For defense: rook defense pawn at a2, knight keeps defending c6, knight defends f7
     Two bishops attack each other in the query board, however in the result board they do not exist anymore. In the previous example, we could see these bishops were preserved. This implies that attack has a
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/Defense}
+        \caption{Top result for board query. Only defense similarity enabled.}
+        \label{fig:Defense}
+    \end{figure}
 
 
     \section{Relevancy}

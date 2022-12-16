@@ -20,9 +20,6 @@
     pdfpagemode=FullScreen,
 }
 
-id:4186629
-id: 126
-
 \bibliographystyle{plain}
 
 \newcommand{\studentA}{Name: Rob Mandelings\\Student ID: 20193884\\}
@@ -64,32 +61,56 @@ id: 126
 
     \subsection{Board State}
 
-    The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example can be seen on (placeholder)
+    The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example of the encoding of a board state looks like the following:
 
-    If the board state query is enabled
+    \begin{verbatim}
+        Ra1 Nb1 Bc1 Qd1 Ke1 Bf1 Ng1 bh1 Pa2 Pb2 Pc2 Pd2 Pe2 Pf3 Pg3 Ph3 ne5
+        pf5 pg5 ph5 pb6 pe6 pa7 pc7 pd7 qg7 ra8 ke8 bf8 ng8 rh8
+    \end{verbatim}
+
+    The white pieces are encoded with a capital letter, where the black pieces are not.
 
     \subsection{Reachability}
 
     This encoding converts the board state into a list of reachable squares, for every piece on the board. A reachable square for a piece is considered to be a square where this piece is allowed to move to on its turn according to the rules of the game. Board positions that have reachabilities similar to the query board position is regarded as a better match.
 
-    Another idea included in the reachability is the distance between the piece and the reachable square. The larger the distance, the smaller the weight that is given to this reachable square. An example is given on figure (figure).
+    Another idea included in the reachability is the distance between the piece and the reachable square. The larger the distance, the smaller the weight that is given to this reachable square.
     The weight $w$ is computed as follow:\\
 
     $w = 1 - \dfrac{7 * d((x,y),(x',y'))}{64}$ \\
 
     Here coordinate $(x,y)$ corresponds to the square of a particular piece, and $(x',y')$ to a reachable square. The distance function used is the Chebychev distance.\\
+    See below for an example of the final encoding:
+
+    \begin{verbatim}
+        bf3|0.78125 bg2|0.890625 nf7|0.78125 ng6|0.78125 nc6|0.78125 ng4|0.78125
+        nc4|0.78125 nf3|0.78125 nd3|0.78125 pf4|0.890625 pg4|0.890625 Ph4|0.890625
+        Pb5|0.890625 ...
+    \end{verbatim}
 
     \subsection{Attack}
 
-    Another encoding is attack, where the board is converted into a sequence of squares with opponents that can be attack by another piece. This encoding is performed for each piece on the board, and concatenated as a single string. You can see an example of this on figure ()
+    Another encoding is attack, where the board is converted into a sequence of squares with opponents that can be attack by another piece. This encoding is performed for each piece on the board, and concatenated as a single string. An example of the final encoding can be found below:
+
+    \begin{verbatim}
+        b>Pf3 n>Pf3 B>qd7 ...
+    \end{verbatim}
 
     \subsection{Defense}
 
-    This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that `attacks' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example is given at figure ().
+    This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that `attacks' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example of the final encoding can be found below:
+
+    \begin{verbatim}
+        R<Nb1 R<Pa2 N<Pd2 B<Pb2 B<Pd2 Q<Bc1 Q<Ke1 Q<Pc2 Q<Pd2 ...
+    \end{verbatim}
 
     \subsection{Ray-Attack}
 
-    Ray-Attack is a more generalized form of the Attack encoding, where not only direct attack squares are considered, but also the attack squares that go through other pieces. Boards that have similar ray-attacks can be considered more similar than those who do not, as the ray-attacked pieces may become vulnerable if one of the directly attacked pieces move.
+    Ray-Attack is a more generalized form of the Attack encoding, where not only direct attack squares are considered, but also the attack squares that go through other pieces. Boards that have similar ray-attacks can be considered more similar than those who do not, as the ray-attacked pieces may become vulnerable if one of the directly attacked pieces move. An example of the final encoding can be found below:
+
+     \begin{verbatim}
+        R=pa7 R=bh1 R=ra8 B=pg5 Q=pd7 Q=bh1 ...
+    \end{verbatim}
 
     \subsection{Check}
 
@@ -150,10 +171,9 @@ id: 126
         \label{fig:ExactMatch1-Bo}
     \end{figure}
 
-    We will now consider the attack and defense encodings to evaluate our retrieval system. The first
-
-    Knight attacks bishop on g5, rook attacks bishop at g5, knight attack pawn at e5, white bishop attacks bishop at 5g (attach eachother).
-    Pawn not defended at b4, bishop is defdedd by rook, king was not defended by the rook
+    We will now consider the attack and defense encodings to evaluate our retrieval system. First we look at the results obtained using only attack similarity, see figure \ref{fig:Attack}.
+    Here we see several strong attack similarities between the query board configuration and the top result. For example, the white knight attacks the black bishop on g5, the white rook attacks the black bishop on g5, white knight attacks the black pawn at e5 and the white and black bishops are attacking each other.
+    Note that in this case defense is disregarded completely, some clear differences between the two boards are that the white pawn on p4, the white bishop on c2 and the white king are not defended in the query board configuration and in the top result they are.
 
     \begin{figure}[H]
         \centering
@@ -162,8 +182,7 @@ id: 126
         \label{fig:Attack}
     \end{figure}
 
-    For defense: rook defense pawn at a2, knight keeps defending c6, knight defends f7
-    Two bishops attack each other in the query board, however in the result board they do not exist anymore. In the previous example, we could see these bishops were preserved. This implies that attack has a
+    Now we will take a look at the results obtained in figure \ref{fig:Defense}, where only defense similarity is used. First of all we see that the similarity in terms of defense is quite strong. Even though the white rook in the a-file has a different position, in both configurations it is defending the white pawn at a2. Also, the black knight at b8 is defending the bishop at c6 and the black knight at g8 is defending the pawn at f6. As a prove that only defense similarity is used and it is properly working, we can also see that the similarity in terms of attacks is quite bad. For example, two bishops in the query configuration attack each other and in the result configuration they do not exist anymore. We saw in the previous case, where only attack similarity was enabled, that these attacking bishops were preserved in the results.
 
     \begin{figure}[H]
         \centering

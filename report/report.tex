@@ -82,7 +82,6 @@
 
     % TODO er zou in principe ook met de parameters kunnen worden gespeeld om sommige encoderingen een groter gewicht / belang te laten hebben dan anderen om de relevancy te verhogen (bijvoorbeeld check of checkmate).
 
-
     \section{Document format}\label{sec:documentformat}
 
     % TODO full document format example include here
@@ -108,13 +107,10 @@
     % TODO why did we use BM25 and not BM25F for example?
     % TODO Inverse Document Frequency (IDF) is a weight indicating how commonly a word is used. The more frequent its usage across documents, the lower its score.
 
-    \sections{Evaluation}
+    \section{Evaluation}
 
 
     \section{Results}
-
-
-    \section{Evaluation}
 
 
     \section{Indexing Speed}
@@ -137,6 +133,10 @@
     After the query is performed, you will get a list of games sorted on relevancy, with the most relevant game at the top. You will also noticed that one board is highlighted that means this board configuration had the highest matching score and thus resulted in the retrieval of the corresponding game. All other boards of the game are also retrieved to see which moves led to the highlighted board configuration or what moves come next.
 
     As a side-note, a working demo of our project can be found at \href{http://chess.minetronic.com}{chess.minetronic.com}.
+
+    \section{Technologies}
+
+    For the backend implementation of the project we mainly used Python. We chose Python as it was the most easy and readable programming language for us to work with and we did not want to lose time on learning other languages. To help us work with chess games and boards we used the chess library python-chess [reference]. We used this library as it seemed useless to implement all the chess logic ourselves as this is not the purpose of our project. The library also contained a parser for both the PGN and FEN formats.
 
     \bibliography{refs}
 

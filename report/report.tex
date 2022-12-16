@@ -38,18 +38,18 @@
 
     Learning and getting better at chess can be a difficult but satisfying process. As the field of artificial intelligence has grown substantially in the last couple of decades, so has the amount of AI based chess computers and solving systems. Often the reasoning behind the choices of such an AI based computer can be hard to explain and even harder to learn from, because such a system does not `think' the way a human chess player does.
 
-    In this project we try a different way for creating an informative and educational chess system. As there are an enormous amount of chess games played already and still being played everyday, we used an information retrieval based approach. The objective is to retrieve games based on the similarity between the board positions in these already played games and a given chess board position. This would allow a user to analyse already played games more quickly and to improve his strategy for certain situations.
+    In this project we try a different way for creating an informative and educational chess system. As there are an enormous amount of chess games played already and still being played everyday, we used an information retrieval based approach. The objective is to retrieve games based on the similarity between the board positions in these already played games and a given chess board position. This would allow a user to analyse already played games more quickly and to improve their strategy for certain situations.
 
 
     \section{Problem Definition}
 
-    Chess is a very popular board game between two players, where each player has a corresponding color. When the game starts, each player starts with an equal number of pieces, with each piece of a certain type. Every type of piece has different rules that govern which locations it may move to. If a reachable square is already occupied by a piece of the opposite side, this piece is allowed to move to that square. In this case, the piece of the opponent gets removed from the board. The goal is to place the king of the opponent into a checkmate position, i.e.\ the king is under immediate attack and cannot move to a position where it will not be attacked.
+    Chess is a board game between two players, where each player has a corresponding color. When the game starts, each player starts with an equal number of pieces, with each piece of a certain type. Every type of piece has different rules that govern which locations it may move to. If a reachable square is already occupied by a piece of the opposite side, this piece is allowed to move to that square. In this case, the piece of the opponent gets removed from the board. The goal is to place the king of the opponent into a checkmate position, i.e.\ the king is under immediate attack and cannot move to a position where it will not be attacked.
 
     At each step, a player has the option to move a single piece on the board, possibly removing a piece of the opposite color.
 
-    As there are many ways in which to play game, people might wonder what might be a good move, given a particular board configuration. Therefore, it might be useful to look at similar board configurations for games that have been played in history in order to see what other people did in a similar setting as well as how the game ended. This makes it easier to perform analysis on board configurations and decide what is a good tactic or not.
+    As there are many ways in which to play game, people might wonder what might be a good move, given a particular board configuration. Therefore, it might be useful to look at similar board configurations for games that have been played in history in order to see what other people did in a similar setting, as well as how the game ended. This makes it easier to perform analysis on board configurations and decide what is a good tactic or not.
 
-    After the introduction and motivation for the project, we will now formulate our problem statement. The goal is to retrieve a relevant list of games (documents) which is sorted in a certain decreasing order. This order would be based on the similarity of a given board configuration (the query) and the board configurations in the games. So the more similar a board configuration inside a game to the given query, the higher this game would come up in the list.
+    We will now formulate our problem statement. The goal is to retrieve a list of games (documents), based on a given board configuration (the query). The obtained list of games is sorted in a decreasing order of similarity, where the most similar board of each game is used as the similarity score of that game. So the more similar a board configuration is to the given query, the higher its corresponding game would come up in the list. Note that a particular game can be matched at most once in a single search.
 
     % TODO numskip
     % TODO complete games filtering
@@ -60,18 +60,16 @@
 
     In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of \cite{SimilarChessPositions}. For a more mathematical explanation we refer to this as well.
 
-    Each of the encoding methods that are explained below encode the pieces in a similar way, using their own symbol. A single piece along its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The only difference is that the reachability encoding also includes a weight for each piece.
+    Each of the encoding methods that are explained below encode the pieces in a similar way, using their own symbol. A single piece along its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The white pieces are encoded with a capital letter, where the black pieces are not.
 
     \subsection{Board State}
 
     The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example of the encoding of a board state looks like the following:
 
-    \begin{BVerbatim}
+    \begin{verbatim}
         Ra1 Nb1 Bc1 Qd1 Ke1 Bf1 Ng1 bh1 Pa2 Pb2 Pc2 Pd2 Pe2 Pf3 Pg3 Ph3 ne5
         pf5 pg5 ph5 pb6 pe6 pa7 pc7 pd7 qg7 ra8 ke8 bf8 ng8 rh8
-    \end{BVerbatim}
-
-    The white pieces are encoded with a capital letter, where the black pieces are not.
+    \end{verbatim}
 
     \subsection{Reachability}
 
@@ -89,39 +87,43 @@
     Here coordinate $(x,y)$ corresponds to the square of a particular piece, and $(x',y')$ to a reachable square. The distance function used is the Chebychev distance.\\
     See below for an example of the final encoding:
 
-    \begin{BVerbatim}
+    \begin{verbatim}
         bf3|0.78125 bg2|0.890625 nf7|0.78125 ng6|0.78125 nc6|0.78125 ng4|0.78125
         nc4|0.78125 nf3|0.78125 nd3|0.78125 pf4|0.890625 pg4|0.890625 Ph4|0.890625
         Pb5|0.890625 ...
-    \end{BVerbatim}
+    \end{verbatim}
 
     \subsection{Attack}
 
-    Another encoding is attack, where the board is converted into a sequence of squares with opponents that can be attack by another piece. This encoding is performed for each piece on the board, and concatenated as a single string. An example of the final encoding can be found below:
+    Another encoding is attack, where the board is converted into a sequence of squares with opponents that can be attacked by another piece. An example of the final encoding can be found below:
 
-    \begin{BVerbatim}
+    \begin{verbatim}
         b>Pf3 n>Pf3 B>qd7 ...
-    \end{BVerbatim}
+    \end{verbatim}
 
     \subsection{Defense}
 
     This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that `attacks' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example of the final encoding can be found below:
 
-    \begin{BVerbatim}
+    \begin{verbatim}
         R<Nb1 R<Pa2 N<Pd2 B<Pb2 B<Pd2 Q<Bc1 Q<Ke1 Q<Pc2 Q<Pd2 ...
-    \end{BVerbatim}
+    \end{verbatim}
 
     \subsection{Ray-Attack}
 
     Ray-Attack is a more generalized form of the Attack encoding, where not only direct attack squares are considered, but also the attack squares that go through other pieces. Boards that have similar ray-attacks can be considered more similar than those who do not, as the ray-attacked pieces may become vulnerable if one of the directly attacked pieces move. An example of the final encoding can be found below:
 
-    \begin{BVerbatim}
+    \begin{verbatim}
         R=pa7 R=bh1 R=ra8 B=pg5 Q=pd7 Q=bh1 ...
-    \end{BVerbatim}
+    \end{verbatim}
 
     \subsection{Check}
 
-    A simple, yet powerful encoding we have implemented is Check. It is apparent to see that boards in a similar check state should be much more relevant to each other than other boards, mainly because being checked limits the moves that you can make. In case the board is in the check state, the color that is being checked as well as the pieces that attack the king are encoded. These terms make sure that the check similarity between boards goes up if the same color is being check, and is maximal if the pieces that attack the king are also equal. For example, the board that is used as query has a black queen that attacks the white king (figure todo).
+    A simple, yet powerful encoding we have implemented is Check. It is apparent to see that boards in a similar check state should be much more relevant to each other than other boards, mainly because being checked limits the moves that you can make. In case the board is in the check state, the color that is being checked as well as the pieces that attack the king are encoded. These terms make sure that the check similarity between boards goes up if the same color is being check, and is maximal if the pieces that attack the king are also equal. Another example can be found below:
+
+    \begin{verbatim}
+        black Qf7
+    \end{verbatim}
 
     \subsection{Other possibilities}
 
@@ -136,7 +138,7 @@
 
     This section explains the complete document format as well as provides an example of a single document containing all the board encodings as well as the game to which the board belongs. We have purposely split up the encodings into several fields instead of a single ``board\_encoding'' field, to allow for modularity. As you will see, it will be easy to toggle some of the encoding methods while querying for results in our user interface.
 
-    Each of the encoding methods explained before encode the pieces in similarly. A single piece along its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The only difference is that the reachability encoding also includes a weight for each piece.
+    Each of the encoding methods explained before encode the pieces in similarly. A single piece along with its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The only difference is that the reachability encoding also includes a weight for each piece.
 
     \begin{figure}[H]
         \centering
@@ -152,7 +154,7 @@
 
     \subsection{BM25}
 
-    The retrieval of our documents were performed with the algorithm Okapi BM25. The reason that we used this algorithm is that this enables ranked retrieval of documents, mainly because it allows boards to be retrieved in decreasing order of similarity. For this we used the parameters $k1 = 2.0$ and $b = 0.75$. Another key property of this algorithm is that it uses a bag-of-words function, for which the grammar and word order is disregarded. This makes sense, as the position of the pieces is already included in the encodings, therefore matching a piece at a position can be done regardless of the order.
+    The retrieval of our documents were performed with the algorithm Okapi BM25. The reason that we used this algorithm is that this enables ranked retrieval of documents, mainly because it allows boards to be retrieved in decreasing order of similarity. For this we used the default parameters $k1 = 2.0$ and $b = 0.75$. Another key property of this algorithm is that it uses a bag-of-words function, for which the grammar and word order is disregarded. This makes sense, as the position of the pieces is already included in the encodings, therefore matching a piece at a position can be done regardless of the order. We based our decision to use this algorithm on ~\cite{SimilarChessPositions}.
 
 % TODO explain inverse document frequency
 
@@ -167,7 +169,7 @@
 
     It is hard to evaluate this information retrieval in an absolute manner, as the relevancy of the search results is hard to measure. If we had the time, we would ask chess players to rate the relevancy of the search results based on a set of predetermined chess positions. This information would subsequently be used to judge the relevance of the retrieval system. However, we are able to evaluate our retrieval system based on the difference between the relative similarity of the results, given a query. This evaluation is based on what we consider to be important similarities between chess boards. Such as the presence of a check, attack and defense positions, exact matches etc.
 
-    First we will evaluate the search results based on exact matching. This means that if we query for a board configuration, and this exact board configuration is also present as a document in the index, it should be retrieved as the top result. We have provided a few figures () that demonstrate this functionality.
+    First we will evaluate the search results based on exact matching. This means that if we query for a board configuration, and this exact board configuration is also present as a document in the index, it should be retrieved as the top result. We have provided a few figures (\ref{fig:ExactMatch1-Bo}, ~\ref{fig:ExactMatch2-Re}, ~\ref{fig:ExactMatch3-De}, ~\ref{fig:ExactMatch4-At}) that demonstrate this functionality.
 
     \begin{figure}[H]
         \centering
@@ -176,7 +178,28 @@
         \label{fig:ExactMatch1-Bo}
     \end{figure}
 
-    We will now consider the attack and defense encodings to evaluate our retrieval system. First we look at the results obtained using only attack similarity, see figure \ref{fig:Attack}.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=12cm]{images/ExactMatch2-Re}
+        \caption{Exact matching; Only board similarity enabled.}
+        \label{fig:ExactMatch2-Re}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=12cm]{images/ExactMatch3-De}
+        \caption{Exact matching; Only board similarity enabled.}
+        \label{fig:ExactMatch3-De}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=12cm]{images/ExactMatch4-At}
+        \caption{Exact matching; Only board similarity enabled.}
+        \label{fig:ExactMatch4-At}
+    \end{figure}
+
+    We will now consider the attack and defense encodings to evaluate our retrieval system. First we look at the results obtained using only attack similarity, see figure ~\ref{fig:Attack}.
     Here we see several strong attack similarities between the query board configuration and the top result. For example, the white knight attacks the black bishop on g5, the white rook attacks the black bishop on g5, white knight attacks the black pawn at e5 and the white and black bishops are attacking each other.
     Note that in this case defense is disregarded completely, some clear differences between the two boards are that the white pawn on p4, the white bishop on c2 and the white king are not defended in the query board configuration and in the top result they are.
 
@@ -187,7 +210,7 @@
         \label{fig:Attack}
     \end{figure}
 
-    Now we will take a look at the results obtained in figure \ref{fig:Defense}, where only defense similarity is used. First of all we see that the similarity in terms of defense is quite strong. Even though the white rook in the a-file has a different position, in both configurations it is defending the white pawn at a2. Also, the black knight at b8 is defending the bishop at c6 and the black knight at g8 is defending the pawn at f6. As a prove that only defense similarity is used and it is properly working, we can also see that the similarity in terms of attacks is quite bad. For example, two bishops in the query configuration attack each other and in the result configuration they do not exist anymore. We saw in the previous case, where only attack similarity was enabled, that these attacking bishops were preserved in the results.
+    Now we will take a look at the results obtained in figure ~\ref{fig:Defense}, where only defense similarity is used. First of all we see that the similarity in terms of defense is quite strong. Even though the white rook in the a-file has a different position, in both configurations it is defending the white pawn at a2. Also, the black knight at b8 is defending the bishop at c6 and the black knight at g8 is defending the pawn at f6. As a proof that only defense similarity is used and it is properly working, we can also see that the similarity in terms of attacks is quite bad. For example, two bishops in the query configuration attack each other and in the result configuration they do not exist anymore. We saw in the previous case, where only attack similarity was enabled, that these attacking bishops were preserved in the results.
 
     \begin{figure}[H]
         \centering
@@ -196,7 +219,7 @@
         \label{fig:Defense}
     \end{figure}
 
-    Next, we will evaluate our check similarity. The board configuration we used as the query has a black king that is currently being checked by a white queen (figure ~\ref{fig:BlackCheckQuery}). Therefore a user might be interested in board games that also have a black king that is being attacked. The reason the top results should be boards that are also in the same situation with the black king, is that the moves for black are limited.
+    Next, we will evaluate our check similarity. The board configuration we used as the query has a black king that is currently being checked by a white queen (figure ~\ref{fig:BlackCheckQuery}). Therefore a user might be interested in board games that also have a black king that is being attacked. A reason the top results should be boards that are also in the same situation with the black king, is that the moves for black are limited.
 
     \begin{figure}[H]
         \centering
@@ -210,14 +233,14 @@
     \begin{figure}[H]
         \centering
         \includegraphics[width=12cm]{images/BlackCheck1-Bo}
-        \caption{Query that is used to evaluate check}
+        \caption{Only Board Similarity; Top result for check query}
         \label{fig:BlackCheck1-Bo}
     \end{figure}
 
     \begin{figure}[H]
         \centering
         \includegraphics[width=12cm]{images/BlackCheck2-Bo}
-        \caption{Query that is used to evaluate check}
+        \caption{Only Board Similarity; Second result for check query}
         \label{fig:BlackCheck2-Bo}
     \end{figure}
 
@@ -226,30 +249,30 @@
     \begin{figure}[H]
         \centering
         \includegraphics[width=12cm]{images/BlackCheck1-BoReAtDe}
-        \caption{Query that is used to evaluate check}
+        \caption{Board, Reachability, Attack, Defense, Ray Attack Similarities enabled; Top result for check query}
         \label{fig:BlackCheck1-BoReAtDe}
     \end{figure}
 
     \begin{figure}[H]
         \centering
         \includegraphics[width=12cm]{images/BlackCheck2-BoReAtDe}
-        \caption{Query that is used to evaluate check}
+        \caption{Board, Reachability, Attack, Defense, Ray Attack Similarities enabled; Second result for check query}
         \label{fig:BlackCheck2-BoReAtDe}
     \end{figure}
 
-    We will now enable all similarities, including Check. We can see that the board with the highest score (\ref{fig:BlackCheck1-BoReAtDeCh}) has an attacked king, whereas the same board that was previously the top result, now has a lower score.
+    We will now enable all similarities, including Check. We can see that the board with the highest score (\ref{fig:BlackCheck1-BoReAtDeCh}) has an attacked king, whereas the same board that was previously the top result (~\ref{fig:BlackCheck1-BoReAtDe}), now has a lower score (~\ref{fig:BlackCheck2-BoReAtDeCh}).
 
     \begin{figure}[H]
         \centering
         \includegraphics[width=12cm]{images/BlackCheck1-BoReAtDeCh}
-        \caption{Query that is used to evaluate check}
+        \caption{All similarities enabled (including Check); Top result for check query}
         \label{fig:BlackCheck1-BoReAtDeCh}
     \end{figure}
 
     \begin{figure}[H]
         \centering
         \includegraphics[width=12cm]{images/BlackCheck2-BoReAtDeCh}
-        \caption{Query that is used to evaluate check}
+        \caption{All similarities enabled (including Check); Second result for check query}
         \label{fig:BlackCheck2-BoReAtDeCh}
     \end{figure}
 
@@ -261,7 +284,7 @@
 
     \section{User Interface}
 
-    For demonstration purposes and ease of evaluation, we have created a user interface to run the queries and retrieve the results. A board configuration can be loaded by using an FEN configuration, either entering one manually or selecting a preset from the list. You can also turn on or off certain similarity encodings as you like, which is possible due to the usage of fields (section ~\ref{sec:documentformat}). After you have constructed the query (board configuration) and selected the desired encodings to be assist in the query, you can click on the search button to retrieve the results.
+    For demonstration purposes and ease of evaluation, we have created a user interface to run the queries and retrieve the results. A board configuration can be loaded by using an FEN configuration, either entering one manually or selecting a preset from the list. You can also turn on or off certain similarity encodings as you like, which is possible due to the usage of fields (section ~\ref{sec:documentformat}). After you have constructed the query (board configuration) and selected the desired encodings to assist in the query, you can click on the search button to retrieve the results.
 
     After the query is performed, you will get a list of games sorted on relevancy, with the most relevant game at the top. You will also noticed that one board is highlighted that means this board configuration had the highest matching score and thus resulted in the retrieval of the corresponding game. All other boards of the game are also retrieved to see which moves led to the highlighted board configuration or what moves come next.
 

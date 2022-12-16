@@ -50,11 +50,13 @@ id: 126
 
     \section{Board Encoding}
 
-    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of [reference to similar chess positions paper]. For a more mathematical explaination we refer to [paper] as well.
+    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of \cite{SimilarChessPositions}. For a more mathematical explaination we refer to [paper] as well.
 
     \subsection{Board State}
 
     The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example can be seen on (placeholder)
+
+    If the board state query is enabled
 
     \subsection{Reachability}
 
@@ -66,8 +68,6 @@ id: 126
     $w = 1 - \dfrac{7 * d((x,y),(x',y'))}{64}$ \\
 
     Here coordinate $(x,y)$ corresponds to the square of a particular piece, and $(x',y')$ to a reachable square. The distance function used is the Chebychev distance.\\
-
-    As you might notice, the encoding for the board state seems similar to the reachability encoding. In fact, reachability stronger than board state encoding as reachability includes the board state as well. Therefore, if you enable both encodings for the query, you will get the same results as if you only enabled reachability. This is illustrated below in figures [placeholder]. Figure [] shows
 
     \subsection{Attack}
 
@@ -148,12 +148,18 @@ id: 126
 
     \section{Suggestions}
 
+    <<<<<<< HEAD
     % TODO
+    =======
+    In this section we give some of the possible improvements that could be made to the system.
+
+    An improvement that could be added is the rated-based filtering of the retrieval results. This would make the final results more relevant because games with a higher rating give more useful information.
+    >>>>>>> a0f1abba800d538f10d6cd09feb600b7adec988a
 
 
     \section{Technologies}
 
-    For the backend implementation of the project we mainly used Python. We chose Python as it was the most easy and readable programming language for us to work with and we did not want to lose time on learning other languages. To help us work with chess games and boards we used the chess library python-chess [reference]. We used this library as it seemed useless to implement all the chess logic ourselves as this is not the purpose of our project. The library also contained a parser for both the PGN and FEN formats.
+    For the backend implementation of the project we mainly used Python. We chose Python as it was the most easy and readable programming language for us to work with and we did not want to lose time on learning other languages. To help us work with chess games and boards we used the chess library python-chess \cite{python-chess}. We used this library as it seemed useless to implement all the chess logic ourselves as this is not the purpose of our project. The library also contained a parser for both the PGN and FEN formats.
 
     \bibliography{refs}
 

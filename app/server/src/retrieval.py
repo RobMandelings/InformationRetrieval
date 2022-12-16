@@ -22,9 +22,11 @@ def get_documents(solr_instance: pysolr.Solr, query, filter_query):
     )
 
     groups = result.grouped['game_id']['groups']
-    assert groups, "no results were found"
-    documents = list(map(lambda group: group['doclist']['docs'][0], groups))
-    return documents
+    if groups:
+        documents = list(map(lambda group: group['doclist']['docs'][0], groups))
+        return documents
+    else:
+        return []
 
 
 def retrieve(solr_instance: pysolr.Solr, board: chess.Board,

@@ -77,7 +77,10 @@
 
     \subsection{Check}
 
-    A simple, yet powerful encoding we have implemented is Check. In case the board is in the check state, the pieces that attack the king are encoded. It is apparent to see that boards in a similar check state should be much more relevant to each other than other boards, mainly because being checked limits the moves that you can make.
+    A simple, yet powerful encoding we have implemented is Check. It is apparent to see that boards in a similar check state should be much more relevant to each other than other boards, mainly because being checked limits the moves that you can make. In case the board is in the check state, the color that is being checked as well as the pieces that attack the king are encoded. These terms make sure that the check similarity between boards goes up if the same color is being check, and is maximal if the pieces that attack the king are also equal. For example, the board that is used as query has a black queen that attacks the white king (figure todo).
+
+    Board, Reachability, Attack, Defense
+    check:black;check:white
 
     \subsection{Other possibilities}
 

@@ -9,6 +9,8 @@
             <div>Event: {{ this.event }}</div>
             <div>Players: {{ this.whiteName }} (white) vs {{ this.blackName }} (black)</div>
             <div>Datetime: {{ this.dateTime }}</div>
+            <div>Score: {{ this.documentData.score }}</div>
+            <div></div>
           </div>
         </div>
         <div class="w-3/5">

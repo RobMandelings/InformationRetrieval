@@ -123,6 +123,14 @@
             value="check"
         ></v-checkbox>
       </div>
+      <div class="w-full">
+        <v-text-field
+            label="Filter queries"
+            hide-details="auto"
+
+            v-model="filterQueries"
+        ></v-text-field>
+      </div>
     </div>
   </div>
 </template>
@@ -145,6 +153,7 @@ export default {
       fenDialog: false,
       selectedMethods: [],
       exampleFenStates: [
+        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
         'rnbqkbnr/pp2pppp/2p5/8/4p3/2N2Q2/PPPP1PPP/R1B1KBNR',
         'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
         '8/pp2k1p1/2p3K1/6p1/3PP3/2P4P/PP4P1/2b5',
@@ -161,7 +170,8 @@ export default {
         // Check
         'r2qkb1r/pp3ppp/1pQ1p1b1/8/2B2n2/3P4/PPP1NPPP/R3K2R'
       ],
-      fenEncodingInput: ''
+      fenEncodingInput: '',
+      filterQueries: '',
     }
   },
   created() {
@@ -196,7 +206,7 @@ export default {
         const result = await axios(
             {
               method: 'get',
-              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&encodingMethods=${this.selectedMethods.join(',')}`
+              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&encodingMethods=${this.selectedMethods.join(',')}&filterQueries=${this.filterQueries}`
             });
 
         const documents = result.data.results;
@@ -217,6 +227,7 @@ export default {
           document['boards'] = boardStates;
           document['move_nr'] = document.move_nr;
         });
+        documents.sort((document1, document2) => document2.score - document1.score)
         this.retrievedDocuments = documents;
       } catch (e) {
         console.log(e);

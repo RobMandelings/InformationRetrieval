@@ -13,11 +13,13 @@ class SearchResource(Resource):
     def get(self):
         fen = request.args['state']
         str_encodingMethods = request.args['encodingMethods'].split(',')
+        filter_queries = request.args['filterQueries'].split(';')
         """
         Handles get requests for IR queries made by the user
         """
 
         board = chess.Board(fen)
-        metrics = list(map(lambda str_metric: encoding_methods.EncodingMethod.from_str(str_metric), str_encodingMethods))
-        results = retrieve(solr_util.get_solr_instance(), board, metrics)
+        metrics = list(
+            map(lambda str_metric: encoding_methods.EncodingMethod.from_str(str_metric), str_encodingMethods))
+        results = retrieve(solr_util.get_solr_instance(), board, metrics, filter_queries)
         return {'results': results}

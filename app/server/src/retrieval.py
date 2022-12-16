@@ -34,7 +34,6 @@ def retrieve(solr_instance: pysolr.Solr, board: chess.Board,
              filter_queries: typing.List[str]):
     """
     Retrieves a ranked list of game states provided the query
-    TODO retrieve complete games as documents instead of boards
     """
     board_encoding = encoding.encode_board(board, encodingMethods)
 

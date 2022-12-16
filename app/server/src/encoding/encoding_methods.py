@@ -59,8 +59,6 @@ class EncodingMethod(enum.Enum):
         raise ValueError(f'Could not convert string {name} to metric')
 
 
-# TODO can be improved: apply mask, nand with moves, ...
-# TODO legal moves is expensive, so added as parameter. However could be better
 def reachability_closure(board: chess.Board, square: chess.Square, legal_moves_list: list) -> typing.Dict[str, float]:
     """
     Computes the reachability closure of piece p on square (x,y) with a given board:
@@ -81,7 +79,6 @@ def reachability_closure(board: chess.Board, square: chess.Square, legal_moves_l
     possible_moves = [move for move in legal_moves_list if move.uci()[:2] == square_name]
     closure = {}
     for move in possible_moves:
-        # TODO maybe mention promotion in paper, update slicing indices to handle the promotion case
         d = chess.square_distance(square, chess.parse_square(move.uci()[2:4]))
         weight = 1 - ((7 * d) / 64)
         key = piece.symbol() + move.uci()[2:4]

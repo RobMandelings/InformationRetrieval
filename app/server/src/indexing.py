@@ -118,14 +118,6 @@ def index_games(solr_instance: pysolr.Solr, filenames, num_skip: int = 24,
     solr_instance.commit()
 
 
-# Test for index_games
-# game_file = open("example_games/game.pgn")
-# game2_str = open("example_games/game2.pgn").read()
-# game3_str = open("example_games/game3.pgn").read()
-# game4_str = open("example_games/game4.pgn").read()
-# games = [game_str, game2_str, game3_str, game4_str]
-
-
 def write_fen_notations(games):
     with open('example_games/games_fen.txt', 'w+') as output_file:
         for game_str in games:
@@ -135,12 +127,3 @@ def write_fen_notations(games):
                 output_file.write(f"{board.fen().split()[0]}\n")
                 board.push(move)
             output_file.write('\n')
-
-# write_fen_notations(games)
-
-
-# index_games(games, num_skip=0)
-
-# TODO test max 1 state retrieved per game
-
-# TODO: document the board encoding from paper

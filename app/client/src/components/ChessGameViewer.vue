@@ -70,7 +70,6 @@ export default {
     }
   },
   mounted() {
-    // TODO might not be necessary anymore
     this.initializeBoard();
   },
   watch: {

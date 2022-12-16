@@ -33,6 +33,7 @@ id: 126
 \begin{document}
     \maketitle
 
+
     \section{Introduction}
 
     Learning and getting better at chess can be a difficult but satisfying process. As the field of artificial intelligence has grown substantially in the last couple of decades, so has the amount of AI based chess computers and solving systems. Often the reasoning behind the choices of such an AI based computer can be hard to explain and even harder to learn from, because such a system does not `think' the way a human chess player does.
@@ -136,6 +137,19 @@ id: 126
 
     \section{Evaluation}
 
+    It is hard to evaluate this information retrieval in an absolute manner, as the relevancy of the search results is hard to measure. If we had the time, we would ask chess players to rate the relevancy of the search results based on a set of predetermined chess positions. This information would subsequently be used to judge the relevance of the retrieval system. However, we are able to evaluate our retrieval system based on the difference between the relative similarity of the results, given a query. This evaluation is based on what we consider to be important similarities between chess boards. Such as the presence of a check, attack and defense positions, exact matches etc.
+
+    First we will evaluate the search results based on exact matching. This means that if we query for a board configuration, and this exact board configuration is also present as a document in the index, it should be retrieved as the top result. We have provided a few figures () that demonstrate this functionality.
+
+    We will now consider the attack and defense encodings to evaluate our retrieval system. The first
+
+    Knight attacks bishop on g5, rook attacks bishop at g5, knight attack pawn at e5, white bishop attacks bishop at 5g (attach eachother).
+    Pawn not defended at b4, bishop is defdedd by rook, king was not defended by the rook
+
+
+    For defense: rook defense pawn at a2, knight keeps defending c6, knight defends f7
+    Two bishops attack each other in the query board, however in the result board they do not exist anymore. In the previous example, we could see these bishops were preserved. This implies that attack has a
+
 
     \section{Relevancy}
 
@@ -155,14 +169,9 @@ id: 126
 
     \section{Suggestions}
 
-    <<<<<<< HEAD
-    % TODO
-    =======
     In this section we give some of the possible improvements that could be made to the system.
 
     An improvement that could be added is the rated-based filtering of the retrieval results. This would make the final results more relevant because games with a higher rating give more useful information.
-    >>>>>>> a0f1abba800d538f10d6cd09feb600b7adec988a
-
 
 
     \section{Technologies}

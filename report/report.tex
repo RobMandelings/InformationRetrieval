@@ -23,7 +23,7 @@
 \bibliographystyle{plain}
 
 \newcommand{\studentA}{Name: Rob Mandelings\\Student ID: 20193884\\}
-\newcommand{\studentB}{Name: Jasper De Laet\\Student ID:20192214\\}
+\newcommand{\studentB}{Name: Jasper De Laet\\Student ID: 20192214\\}
 
 \title{Information Retrieval: Chess game retrieval based on board similarity}
 \author{\studentA \\ \studentB}
@@ -57,7 +57,9 @@
 
     \section{Board Encoding}
 
-    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of \cite{SimilarChessPositions}. For a more mathematical explaination we refer to this as well.
+    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on the ideas and closures of \cite{SimilarChessPositions}. For a more mathematical explanation we refer to this as well.
+
+    Each of the encoding methods that are explained below encode the pieces in a similar way, using their own symbol. A single piece along its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The only difference is that the reachability encoding also includes a weight for each piece.
 
     \subsection{Board State}
 
@@ -132,9 +134,6 @@
 
     This section explains the complete document format as well as provides an example of a single document containing all the board encodings as well as the game to which the board belongs. We have purposely split up the encodings into several fields instead of a single ``board\_encoding'' field, to allow for modularity. As you will see, it will be easy to toggle some of the encoding methods while querying for results in our user interface.
 
-    Each of the encoding methods explained before encode the pieces in similarly. A single piece along its position on the board is regarded as a term that will be used for indexing, where the full encoding is a string consisting of a sequence of these terms. The only difference is that the reachability encoding also includes a weight for each piece.
-
-
     \section{Solr}
 
     In order to store and retrieve our documents, we used Solr, an application that uses Lucene under the hood. The reason we chose to use Solr instead of Lucene is that it is less difficult to set up, as Lucene is a library whereas Solr works out of the box.
@@ -150,12 +149,6 @@
 
     % TODO why did we use BM25 and not BM25F for example?
     % TODO Inverse Document Frequency (IDF) is a weight indicating how commonly a word is used. The more frequent its usage across documents, the lower its score.
-
-
-    \section{Indexing}
-
-
-    \section{Results}
 
 
     \section{Evaluation}
@@ -249,8 +242,6 @@
     \end{figure}
 
 
-    \section{Relevancy}
-
     % TODO can be hard to evaluate the relevance, if we would elaborate on this project even more, we would have users judge the relevance of chess board retrievals
 
     % TODO if there are boards that are exactly the same as the query, these should be retrieved and visible at the top (one evaluation)
@@ -274,7 +265,11 @@
 
     \section{Technologies}
 
-    For the backend implementation of the project we mainly used Python. We chose Python as it was the most easy and readable programming language for us to work with and we did not want to lose time on learning other languages. To help us work with chess games and boards we used the chess library python-chess \cite{python-chess}. We used this library as it seemed useless to implement all the chess logic ourselves as this is not the purpose of our project. The library also contained a parser for both the PGN and FEN formats.
+    For the backend implementation of the project we mainly used Python. We chose Python as it was the most easy and readable programming language for us to work with and we did not want to lose time on learning other languages. To help us work with chess games and boards we used the chess library python-chess \cite{python-chess}. We used this library as it seemed useless to implement all the chess logic ourselves as this is not the purpose of our project. The library also contained a parser for both the PGN and FEN formats. Regarding the front-end we used a combination of javascript, Vue, Vuetify, Tailwind and chess.js.
+
+    \section{Github}
+
+    Here you can find the link to our github project: \href{https://github.com/RobMandelings/InformationRetrieval.git}{Information Retrieval}.
 
     \bibliography{refs}
 

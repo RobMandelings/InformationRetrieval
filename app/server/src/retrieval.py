@@ -6,8 +6,25 @@ import pysolr
 from encoding import encoding, encoding_methods
 
 
+def get_documents(solr_instance: pysolr.Solr, query, filter_query):
+    result = solr_instance.search(
+        query,
+        **{
+            "fq": filter_query,
+            "fl": "id,game,score,move_nr",
+            "group": "true",
+            "group.field": "game_id"
+        })
+
+    groups = result.grouped['game_id']['groups']
+    assert groups, "no results were found"
+    documents = list(map(lambda group: group['doclist']['docs'][0], groups))
+    return documents
+
+
 def retrieve(solr_instance: pysolr.Solr, board: chess.Board,
-             encodingMethods: typing.List[encoding_methods.EncodingMethod]):
+             encodingMethods: typing.List[encoding_methods.EncodingMethod],
+             filter_queries: typing.List[str]):
     """
     Retrieves a ranked list of game states provided the query
     TODO retrieve complete games as documents instead of boards
@@ -24,17 +41,12 @@ def retrieve(solr_instance: pysolr.Solr, board: chess.Board,
                 # Better if boosts are not hardcoded
                 query += f'({encodingMethod.field_name}:({enc}))^{10} '
 
-    result = solr_instance.search(
-        query,
-        **{
-            "fl": "id,game,score,move_nr",
-            "group": "true",
-            "group.field": "game_id"
-        })
+    documents = []
+    if len(filter_queries) == 0:
+        documents.append(get_documents(solr_instance, query, ''))
+    else:
+        for filter_query in filter_queries:
+            # Only top document for each filter query is kept
+            documents.append(get_documents(solr_instance, query, filter_query)[0])
 
-    groups = result.grouped['game_id']['groups']
-    documents = list(map(lambda group: group['doclist']['docs'][0], groups))
-
-    # TODO improve checking
-    assert groups, "no results were found"
     return documents

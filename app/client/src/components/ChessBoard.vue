@@ -5,7 +5,7 @@
          style="grid-template-rows: repeat(8, minmax(0, 1fr));grid-template-columns: repeat(8,  minmax(0, 1fr));"
     >
       <template v-for="(i, row) in 8" :key="row">
-        <div class="text-xl" :class="getBackgroundForPosition(row, col)" v-for="(j, col) in 8" :key="col">
+        <div class="text-xl " :class="getBackgroundForPosition(row, col)" v-for="(j, col) in 8" :key="col">
           <div v-if="getPiece(row,col)">
             <img class="h-full"
                  :src="getPiece(row,col).imgPath" :alt="getPiece(row,col).name"/>
@@ -38,7 +38,7 @@ export default {
       return this.state[`${row},${col}`];
     },
     getBackgroundForPosition(row, column) {
-      let black = row % 2 !== 0;
+      let black = row % 2 === 0;
       if ((row * 8 + column) % 2 !== 0) black = !black;
 
       if (black) return this.highlight ? 'bg-yellow-100' : 'bg-amber-50';

@@ -43,13 +43,13 @@
 
     \section{Board Encoding}
 
-    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration.
+    In order to create an efficient information retrieval system over chess games, we need to develop appropriate indexing for the documents. Therefore, we have to find a way to encode a board configuration so that the important information is preserved. We have used several encoding techniques, each of which highlights different features of a specific board configuration. The board state, reachability, attack, defense and ray-attack are based on [reference to similar chess positions paper].
 
     \subsection{Board State}
 
     The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example can be seen on (placeholder)
 
-    \subsubsection{Reachability}
+    \subsection{Reachability}
 
     This encoding converts the board state into a list of reachable squares, for every piece on the board. A reachable square for a piece is considered to be a square where this piece is allowed to move to on its turn. Board positions that have reachabilities similar to the query board position is regarded as a better match.
 
@@ -60,23 +60,23 @@
         \label{eq:distanceMetric}
     \end{equation}
 
-    \subsubsection{Attack}
+    \subsection{Attack}
 
     Another encoding is attack, where the board is converted into a sequence of squares with opponents that can be attack by another piece. This encoding is performed for each piece on the board, and concatenated as a single string. You can see an example of this on figure ()
 
-    \subsubsection{Defense}
+    \subsection{Defense}
 
     This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that  `attacks' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example is given at figure ().
 
-    \subsubsection{Ray-Attack}
+    \subsection{Ray-Attack}
 
     Ray-Attack is a more generalized form of the Attack encoding, where not only direct attack squares are considered, but also the attack squares that go through other pieces. Boards that have similar ray-attacks can be considered more similar than those who do not, as the ray-attacked pieces may become vulnerable if one of the directly attacked pieces move.
 
-    \subsubsection{Check}
+    \subsection{Check}
 
     A simple, yet powerful encoding we have implemented is Check. In case the board is in the check state, the pieces that attack the king are encoded. It is apparent to see that boards in a similar check state should be much more relevant to each other than other boards, mainly because being checked limits the moves that you can make.
 
-    \subsubsection{Other possibilities}
+    \subsection{Other possibilities}
 
     We have only implemented a sample of the possible encodings for these board configurations, as there is other useful information that might be encoded from these boards to get even more relevancy.
 

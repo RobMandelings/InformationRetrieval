@@ -41,7 +41,7 @@ def encode_board(board: chess.Board,
                  metrics: typing.List[encoding_methods.EncodingMethod]) -> typing.Dict[
     encoding_methods.EncodingMethod, str]:
     """
-    Encodes a board to the right format (with the given closures)
+    Encodes a board to the right format (with the given encodings)
 
     Uses the encode_closure function
     :param board: a chess board position

@@ -162,7 +162,6 @@ id: 126
         \label{fig:Attack}
     \end{figure}
 
-
     For defense: rook defense pawn at a2, knight keeps defending c6, knight defends f7
     Two bishops attack each other in the query board, however in the result board they do not exist anymore. In the previous example, we could see these bishops were preserved. This implies that attack has a
 
@@ -172,6 +171,62 @@ id: 126
         \caption{Top result for board query. Only defense similarity enabled.}
         \label{fig:Defense}
     \end{figure}
+
+    Next, we will evaluate our check similarity. The board configuration we used as the query has a black king that is currently being checked by a white queen (figure ~\ref{fig:BlackCheckQuery}). Therefore a user might be interested in board games that also have a black king that is being attacked. The reason the top results should be boards that are also in the same situation with the black king, is that the moves for black are limited.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/QueryBlackCheck}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheckQuery}
+    \end{figure}
+
+    We will first analyse two top results for the query where only the board similarity is enabled. By comparing figures ~\ref{fig:BlackCheck1-Bo} and ~\ref{fig:BlackCheck2-Bo}, It is also visible that the result where the black king is attacked has a slightly higher score than the other result. This result can be explained by the fact that the locations of some chess pieces in the results are identical to the query. It can also be observed that the black king being attacked does not yield a significant difference in score, which we will further confirm in the next example.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/BlackCheck1-Bo}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheck1-Bo}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/BlackCheck1-Bo}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheck2-Bo}
+    \end{figure}
+
+    For the next example (figures ~\ref{fig:BlackCheck1-BoReAtDe} and ~\ref{fig:BlackCheck2-BoReAtDe}), we have turned the similarities board, reachability, attack, defense and rayattack except for check. You can see that the score is now higher
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/BlackCheck1-BoReAtDe}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheck1-BoReAtDe}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/BlackCheck2-BoReAtDe}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheck2-BoReAtDe}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/BlackCheck1-BoReAtDeCh}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheck1-BoReAtDeCh}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=14cm]{images/BlackCheck1-BoReAtDeCh}
+        \caption{Query that is used to evaluate check}
+        \label{fig:BlackCheck2-BoReAtDeCh}
+    \end{figure}
+
 
     \section{Relevancy}
 

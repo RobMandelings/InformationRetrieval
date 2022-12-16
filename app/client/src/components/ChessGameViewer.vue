@@ -1,25 +1,30 @@
 <template>
   <div class="flex flex-col space-y-3">
     <div class="h-2/3">
+      <div class="flex flex-row">
+        <div class="w-full">Current FEN: {{ this.selectedBoardFEN }}</div>
+      </div>
       <div class="flex flex-row h-full w-full">
         <div class="w-2/5">
           <!--   General game data     -->
           <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Game Data</h2>
-          <div class="flex flex-col space-y-1 text-left">
+          <div class="flex flex-col space-y-1 text-left flex-wrap">
             <div>Event: {{ this.event }}</div>
             <div>Players: {{ this.whiteName }} (white) vs {{ this.blackName }} (black)</div>
             <div>Datetime: {{ this.dateTime }}</div>
             <div>Score: {{ this.documentData.score }}</div>
+            <div>Id: {{ this.documentData.id }}</div>
             <div></div>
           </div>
         </div>
-        <div class="w-3/5">
+        <div class="w-3/5" style="display:block">
           <!--   Selected board vue     -->
           <!--          <div class="h-full w-full bg-blue-500"></div>-->
           <div class="border-4 mt-1 mr-1">
-            <chess-board class="h-full w-full"
-                         :highlight="this.selectedMoveNr === this.documentData.move_nr"
-                         :state="this.selectedBoard"></chess-board>
+            <chess-board
+                class="h-full w-full"
+                :highlight="this.selectedMoveNr === this.documentData.move_nr"
+                :state="this.selectedBoard"></chess-board>
           </div>
         </div>
       </div>
@@ -52,6 +57,7 @@
 <script>
 
 import ChessBoard from "@/components/ChessBoard.vue";
+import {encodeState} from "@/assets/js/StateLoader.js";
 
 export default {
   components: {ChessBoard},
@@ -75,6 +81,9 @@ export default {
   computed: {
     selectedBoard() {
       return this.boards[this.selectedMoveNr];
+    },
+    selectedBoardFEN() {
+      return encodeState(this.selectedBoard)
     },
     boards() {
       if (this.documentData) return this.documentData.boards;

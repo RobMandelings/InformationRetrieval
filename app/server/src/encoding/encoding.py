@@ -37,14 +37,14 @@ def chess_encode(data, method: encoding_methods.EncodingMethod):
 
 
 def encode_board(board: chess.Board,
-                 metrics: typing.List[encoding_methods.EncodingMethod]) -> typing.Dict[
+                 encodingMethods: typing.List[encoding_methods.EncodingMethod]) -> typing.Dict[
     encoding_methods.EncodingMethod, str]:
     """
     Encodes a board to the right format (with the given encodings)
 
     Uses the encode_closure function
     :param board: a chess board position
-    :param metrics: optional metrics to improve the encoding of the board
+    :param encodingMethods: optional metrics to improve the encoding of the board
     :return: Full encoding of the board which is used in the indexing algorithm
     """
 
@@ -57,9 +57,15 @@ def encode_board(board: chess.Board,
     for (piece, square) in piece_squares:
         base_board_list.append(encoding_methods.encode_piece_at(piece, square))
 
-    if encoding_methods.EncodingMethod.Reachability in metrics:
+    if encoding_methods.EncodingMethod.Reachability in encodingMethods:
         reachability_encodings = list()
+
+        # We need to encode reachability of all pieces, not only the pieces of the current turn color
         legal_moves_list = list(board.legal_moves)
+        board.turn = not board.turn
+        legal_moves_list.extend(board.legal_moves)
+        board.turn = not board.turn
+
         for (piece, square) in piece_squares:
             encoding = chess_encode(encoding_methods.reachability_closure(board, square, legal_moves_list),
                                     encoding_methods.EncodingMethod.Reachability)
@@ -67,7 +73,7 @@ def encode_board(board: chess.Board,
                 reachability_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Reachability] = " ".join(reachability_encodings)
 
-    if encoding_methods.EncodingMethod.Attack in metrics:
+    if encoding_methods.EncodingMethod.Attack in encodingMethods:
         attack_encodings = list()
         for (piece, square) in piece_squares:
             encoding = chess_encode(encoding_methods.attack_closure(board, square),
@@ -76,7 +82,7 @@ def encode_board(board: chess.Board,
                 attack_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Attack] = " ".join(attack_encodings)
 
-    if encoding_methods.EncodingMethod.Defense in metrics:
+    if encoding_methods.EncodingMethod.Defense in encodingMethods:
         defense_encodings = list()
         for (piece, square) in piece_squares:
             encoding = chess_encode(encoding_methods.defense_closure(board, square),
@@ -85,7 +91,7 @@ def encode_board(board: chess.Board,
                 defense_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.Defense] = " ".join(defense_encodings)
 
-    if encoding_methods.EncodingMethod.RayAttack in metrics:
+    if encoding_methods.EncodingMethod.RayAttack in encodingMethods:
         ray_attack_encodings = list()
         for (piece, square) in piece_squares:
             encoding = chess_encode(encoding_methods.ray_attack_closure(board, square),
@@ -94,7 +100,7 @@ def encode_board(board: chess.Board,
                 ray_attack_encodings.append(encoding)
         board_encoding[encoding_methods.EncodingMethod.RayAttack] = " ".join(ray_attack_encodings)
 
-    if encoding_methods.EncodingMethod.Check in metrics:
+    if encoding_methods.EncodingMethod.Check in encodingMethods:
         check_encodings = list()
         color_attacked = None
         for (piece, square) in piece_squares:
@@ -107,8 +113,10 @@ def encode_board(board: chess.Board,
 
         if color_attacked is not None:
             check_encodings.insert(0, 'black' if color_attacked == chess.BLACK else 'white')
-            
+
         board_encoding[encoding_methods.EncodingMethod.Check] = " ".join(check_encodings)
 
-    board_encoding[encoding_methods.EncodingMethod.Board] = " ".join(base_board_list)
+    if encoding_methods.EncodingMethod.Board in encodingMethods:
+        board_encoding[encoding_methods.EncodingMethod.Board] = " ".join(base_board_list)
+
     return board_encoding

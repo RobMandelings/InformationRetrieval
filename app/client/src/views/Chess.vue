@@ -153,7 +153,7 @@ export default {
       fenDialog: false,
       selectedMethods: [],
       exampleFenStates: [
-        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
+        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR',
         'rnbqkbnr/pp2pppp/2p5/8/4p3/2N2Q2/PPPP1PPP/R1B1KBNR',
         'r2qkb1r/pp3ppp/2p1p1b1/8/2B2n2/3P1Q2/PPP1NPPP/R3K2R',
         '8/pp2k1p1/2p3K1/6p1/3PP3/2P4P/PP4P1/2b5',
@@ -203,10 +203,12 @@ export default {
       this.searching = true;
       const stateEncoding = encodeState(this.state);
       try {
+        let url = `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&encodingMethods=${this.selectedMethods.join(',')}`
+        url += `&filterQueries=${this.filterQueries}`
         const result = await axios(
             {
               method: 'get',
-              url: `http://127.0.0.1:5000/api/search?state=${encodeURIComponent(stateEncoding)}&encodingMethods=${this.selectedMethods.join(',')}&filterQueries=${this.filterQueries}`
+              url: url
             });
 
         const documents = result.data.results;
@@ -225,6 +227,7 @@ export default {
           }
           document['game'] = game;
           document['boards'] = boardStates;
+          // Small bug in the indexer: client starts at move 0 as actually the start board, while server counts move 0 as actually move 1. So client move = server move + 1
           document['move_nr'] = document.move_nr;
         });
         documents.sort((document1, document2) => document2.score - document1.score)

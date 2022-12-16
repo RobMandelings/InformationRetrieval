@@ -18,6 +18,9 @@
     pdfpagemode=FullScreen,
 }
 
+id:4186629
+id: 126
+
 \bibliographystyle{plain}
 
 \newcommand{\studentA}{Name: Rob Mandelings\\Student ID: 20193884\\}
@@ -30,11 +33,14 @@
 \begin{document}
     \maketitle
 
+
     \section{Introduction}
 
     Learning and getting better at chess can be a difficult but satisfying process. As the field of artificial intelligence has grown substantially in the last couple of decades, so has the amount of AI based chess computers and solving systems. Often the reasoning behind the choices of such an AI based computer can be hard to explain and even harder to learn from, because such a system does not `think' the way a human chess player does.
 
     In this project we try a different way for creating an informative and educational chess system. As there are an enormous amount of chess games played already and still being played everyday, we used an information retrieval based approach. The objective is to retrieve games based on the similarity between the board positions in these already played games and a given chess board position. This would allow a user to analyse already played games more quickly and to improve his strategy for certain situations.
+
+
     \section{Problem Definition}
 
     Chess is a very popular board game between two players, where each player has a corresponding color. When the game starts, each player starts with an equal number of pieces, with each piece of a certain type. Every type of piece has different rules that govern which locations it may move to. If a reachable square is already occupied by a piece of the opposite side, this piece is allowed to move to that square. In this case, the piece of the opponent gets removed from the board. The goal is to place the king of the opponent into a checkmate position, i.e.\ the king is under immediate attack and cannot move to a position where it will not be attacked.
@@ -58,6 +64,8 @@
 
     The first encoding is the most straightforward, where each piece on the board is encoded. Every piece encoding consists of a piece type, color and position on the board. An example can be seen on (placeholder)
 
+    If the board state query is enabled
+
     \subsection{Reachability}
 
     This encoding converts the board state into a list of reachable squares, for every piece on the board. A reachable square for a piece is considered to be a square where this piece is allowed to move to on its turn according to the rules of the game. Board positions that have reachabilities similar to the query board position is regarded as a better match.
@@ -68,7 +76,6 @@
     $w = 1 - \dfrac{7 * d((x,y),(x',y'))}{64}$ \\
 
     Here coordinate $(x,y)$ corresponds to the square of a particular piece, and $(x',y')$ to a reachable square. The distance function used is the Chebychev distance.\\
-
 
     \subsection{Attack}
 
@@ -130,6 +137,18 @@
 
     \section{Evaluation}
 
+    It is hard to evaluate this information retrieval in an absolute manner, as the relevancy of the search results is hard to measure. If we had the time, we would ask chess players to rate the relevancy of the search results based on a set of predetermined chess positions. This information would subsequently be used to judge the relevance of the retrieval system. However, we are able to evaluate our retrieval system based on the difference between the relative similarity of the results, given a query. This evaluation is based on what we consider to be important similarities between chess boards. Such as the presence of a check, attack and defense positions, exact matches etc.
+
+    First we will evaluate the search results based on exact matching. This means that if we query for a board configuration, and this exact board configuration is also present as a document in the index, it should be retrieved as the top result. We have provided a few figures () that demonstrate this functionality.
+
+    We will now consider the attack and defense encodings to evaluate our retrieval system. The first
+
+    Knight attacks bishop on g5, rook attacks bishop at g5, knight attack pawn at e5, white bishop attacks bishop at 5g (attach eachother).
+    Pawn not defended at b4, bishop is defdedd by rook, king was not defended by the rook
+
+
+    For defense: rook defense pawn at a2, knight keeps defending c6, knight defends f7
+    Two bishops attack each other in the query board, however in the result board they do not exist anymore. In the previous example, we could see these bishops were preserved. This implies that attack has a
 
     \section{Relevancy}
 

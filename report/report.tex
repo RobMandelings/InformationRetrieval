@@ -67,7 +67,7 @@
 
     \subsection{Defense}
 
-    This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that  `attacks' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example is given at figure ().
+    This is similar to the attack encoding, except that the squares should now contain pieces of the same color. Thus, each piece that `attacks' a piece of its own color, actually defends it, as the defended pieces cannot be taken without risk. An example is given at figure ().
 
     \subsection{Ray-Attack}
 
@@ -82,6 +82,7 @@
     We have only implemented a sample of the possible encodings for these board configurations, as there is other useful information that might be encoded from these boards to get even more relevancy.
 
     % TODO er zou in principe ook met de parameters kunnen worden gespeeld om sommige encoderingen een groter gewicht / belang te laten hebben dan anderen om de relevancy te verhogen (bijvoorbeeld check of checkmate).
+
 
     \section{Document format}\label{sec:documentformat}
 
@@ -108,13 +109,18 @@
     % TODO why did we use BM25 and not BM25F for example?
     % TODO Inverse Document Frequency (IDF) is a weight indicating how commonly a word is used. The more frequent its usage across documents, the lower its score.
 
-    \section{Evaluation}
+
+    \section{Indexing}
+
+
+
+    \sections{Evaluation}
 
 
     \section{Results}
 
 
-    \section{Indexing Speed}
+    \section{Evaluation}
 
 
     \section{Retrieval Speed}
@@ -134,6 +140,10 @@
     After the query is performed, you will get a list of games sorted on relevancy, with the most relevant game at the top. You will also noticed that one board is highlighted that means this board configuration had the highest matching score and thus resulted in the retrieval of the corresponding game. All other boards of the game are also retrieved to see which moves led to the highlighted board configuration or what moves come next.
 
     As a side-note, a working demo of our project can be found at \href{http://chess.minetronic.com}{chess.minetronic.com}.
+
+
+    \section{Suggestions}
+
 
     \section{Technologies}
 
